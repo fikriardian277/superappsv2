@@ -6,11 +6,17 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no"
     />
-    <title>Laundry App</title>
+    <title>SuperClean App</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <div id="loading-spinner" class="spinner-container hidden">
+      <div class="spinner"></div>
+    </div>
+
     <div id="app-container"></div>
+
     <nav class="bottom-nav">
       <button id="nav-dashboard" class="nav-button active">
         <img
@@ -18,19 +24,32 @@
           alt="Dashboard"
         /><span>Dashboard</span>
       </button>
-      <button id="nav-tambah" class="nav-button add">
-        <img
-          src="https://icongr.am/feather/plus.svg?size=32&color=ffffff"
-          alt="Tambah"
-        />
-      </button>
       <button id="nav-proses" class="nav-button">
         <img
           src="https://icongr.am/feather/truck.svg?size=24&color=ffffff"
           alt="Proses"
         /><span>Proses</span>
       </button>
+      <button id="nav-tambah" class="nav-button add">
+        <img
+          src="https://icongr.am/feather/plus.svg?size=32&color=ffffff"
+          alt="Tambah"
+        />
+      </button>
+      <button id="nav-riwayat" class="nav-button">
+        <img
+          src="https://icongr.am/feather/archive.svg?size=24&color=ffffff"
+          alt="Riwayat"
+        /><span>Riwayat</span>
+      </button>
+      <button id="nav-pelanggan" class="nav-button">
+        <img
+          src="https://icongr.am/feather/users.svg?size=24&color=ffffff"
+          alt="Pelanggan"
+        /><span>Pelanggan</span>
+      </button>
     </nav>
+
     <script src="script.js"></script>
   </body>
 </html>
