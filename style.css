@@ -511,32 +511,57 @@ form button:active {
   background-color: var(--font-color-light);
 }
 @media print {
-  /* Atur agar printer tidak menyertakan header/footer default browser */
-  @page {
-    size: 58mm auto; /* Opsional: Atur ukuran halaman sesuai lebar printer */
-    margin: 0;
+  /*
+  Aturan ini menyembunyikan semua elemen di luar
+  kontainer utama (`.page-container`)
+  yang tidak memiliki kelas `.struk-container`
+  */
+  .page-container:not(.struk-container) {
+    display: none !important;
   }
 
-  /* Atur kontainer struk */
+  /*
+  Pastikan kontainer struk yang terlihat
+  dan atur ukurannya agar sesuai kertas printer
+  */
   .struk-container {
-    width: 100%;
-    max-width: 58mm; /* Sesuaikan lebar ini */
-    padding: 0;
-    margin: 0;
+    width: 100% !important;
+    max-width: 58mm !important; /* Sesuaikan dengan lebar kertas Anda */
+    margin: 0 auto !important; /* Atur di tengah */
+    padding: 10px !important;
+    box-shadow: none !important;
+    border: none !important;
   }
 
-  /* Atur font dan ukuran teks */
+  /* Atur format teks di dalam struk */
   body,
   p,
-  h3 {
-    font-family: "Courier New", Courier, monospace;
-    font-size: 10px;
-    font-weight: bold;
+  h3,
+  h4,
+  strong {
+    font-family: "Courier New", Courier, monospace !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    color: #000 !important;
+    font-weight: bold !important;
   }
 
-  /* Sembunyikan elemen yang tidak perlu dicetak */
+  /* Atur semua elemen P menjadi rata kiri */
+  p {
+    margin: 2px 0 !important;
+  }
+
+  /* Atur judul struk */
+  h3 {
+    font-size: 14px !important;
+    text-align: center !important;
+    margin-bottom: 5px !important;
+  }
+
+  /* Sembunyikan elemen-elemen yang tidak perlu */
   .struk-actions,
+  .bottom-nav,
   .header-simple {
-    display: none;
+    display: none !important;
   }
 }
