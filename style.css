@@ -386,34 +386,39 @@ form button:active {
 /* ========================================================== */
 /* STYLE UNTUK ANIMASI LOADING                                */
 /* ========================================================== */
-.spinner-container {
+/* CSS untuk spinner sederhana */
+#loading-spinner {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex; /* Menggunakan flexbox untuk memusatkan konten */
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  transition: opacity 0.3s ease;
-  opacity: 1; /* Awalnya terlihat */
 }
-.spinner-container.hidden {
-  opacity: 0;
-  pointer-events: none; /* Tidak bisa diklik saat tersembunyi */
-}
+
 .spinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid var(--border-color);
-  border-top-color: var(--primary-color);
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  border-left-color: #007bff;
+  animation: spin 1s ease infinite;
 }
+
+/* KELAS INI SANGAT PENTING */
+.hidden {
+  display: none !important;
+}
+
 @keyframes spin {
-  to {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
     transform: rotate(360deg);
   }
 }
@@ -510,6 +515,33 @@ form button:active {
 .status-badge.status-selesai {
   background-color: var(--font-color-light);
 }
+
+/* Style tambahan untuk struk multi-item */
+.struk-items-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+.struk-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.item-details {
+  display: flex;
+  flex-direction: column;
+}
+.item-name {
+  font-weight: bold;
+}
+.item-package {
+  font-size: 0.9em;
+  color: #555;
+}
+.item-price {
+  font-weight: bold;
+  text-align: right;
+}
 @media print {
   /*
   Aturan ini menyembunyikan semua elemen di luar
@@ -564,4 +596,61 @@ form button:active {
   .header-simple {
     display: none !important;
   }
+}
+/* Styling untuk daftar item pesanan di form */
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px; /* Jarak antar elemen */
+  padding: 8px 0; /* Sedikit jarak atas-bawah */
+  border-bottom: 1px solid #eee; /* Garis pemisah tipis */
+}
+
+/* Target elemen span pertama (nama item) di dalam .order-item */
+.order-item span:first-child {
+  flex-grow: 1; /* Membuat elemen ini memanjang memenuhi sisa ruang */
+  text-align: left; /* Memastikan teks rata kiri */
+  margin-right: 10px; /* Jarak ke elemen harga */
+}
+
+/* Target elemen span kedua (harga) */
+.order-item span:nth-child(2) {
+  white-space: nowrap; /* Mencegah harga terpotong ke baris baru */
+}
+
+/* Styling untuk tombol hapus (×) yang lebih presisi */
+.btn-remove {
+  /* Ukuran presisi untuk lingkaran sempurna */
+  width: 26px;
+  height: 26px;
+
+  /* Hapus padding & border agar tidak mengganggu ukuran */
+  padding: 0;
+  border: none;
+  border-radius: 50%; /* Membuat jadi lingkaran */
+
+  /* Warna */
+  background-color: #e74c3c; /* Warna merah */
+  color: white; /* Warna icon × jadi putih */
+
+  /* Posisikan icon × di tengah lingkaran dengan flexbox */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Tampilan icon × */
+  font-size: 20px;
+  font-weight: bold;
+  line-height: 1; /* Menghapus spasi ekstra dari baris */
+
+  /* Efek Interaktif */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Mencegah tombol menyusut */
+}
+
+/* Efek saat kursor mouse menyentuh tombol */
+.btn-remove:hover {
+  background-color: #c0392b; /* Warna merah lebih gelap */
 }
