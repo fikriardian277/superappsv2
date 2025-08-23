@@ -510,3 +510,33 @@ form button:active {
 .status-badge.status-selesai {
   background-color: var(--font-color-light);
 }
+@media print {
+  /* Atur agar printer tidak menyertakan header/footer default browser */
+  @page {
+    size: 58mm auto; /* Opsional: Atur ukuran halaman sesuai lebar printer */
+    margin: 0;
+  }
+
+  /* Atur kontainer struk */
+  .struk-container {
+    width: 100%;
+    max-width: 58mm; /* Sesuaikan lebar ini */
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Atur font dan ukuran teks */
+  body,
+  p,
+  h3 {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  /* Sembunyikan elemen yang tidak perlu dicetak */
+  .struk-actions,
+  .header-simple {
+    display: none;
+  }
+}
