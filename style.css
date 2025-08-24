@@ -127,21 +127,17 @@ header {
   margin-bottom: 25px;
 }
 header.header-simple {
-  justify-content: flex-start; /* Untuk header tanpa logo */
+  justify-content: center; /* Untuk header tanpa logo */
 }
 header .logo {
   width: 45px;
   height: 45px;
   border-radius: 10px;
 }
+
 header h1 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-}
-header h1 {
-  margin: 0;
-  font-size: 28px;
+  margin: 0.5rem 0;
+  font-size: 20px;
   font-weight: 700;
 }
 
@@ -177,50 +173,90 @@ header h1 {
 }
 
 /* Form Kasir */
+/* === STYLING FORM KASIR BARU (FOKUS KEJELASAN) === */
+
 .form-container {
   padding-top: 0;
 }
+
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 24px; /* Beri jarak lebih antar field */
 }
+
+/* Label dibuat lebih informatif */
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 600; /* Sedikit lebih tebal */
+  font-size: 1rem;
+  color: #333;
 }
+
+/* Penanda Wajib Isi (*) */
+.form-group label.required::after {
+  content: " *";
+  color: var(--red-color);
+  font-weight: bold;
+}
+
+/* Styling Input dan Select */
 .form-group input,
 .form-group select {
   width: 100%;
   padding: 14px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 1rem;
   font-family: "Inter", sans-serif;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fff;
+  transition: all 0.2s ease;
 }
+
+/* Teks bantuan (placeholder) agar lebih terbaca */
+.form-group input::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+/* Styling saat input/select di-klik (focus) */
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  background-color: #f8f9fa;
 }
+
+/* Styling untuk input/select yang NONAKTIF (disabled) */
+.form-group input:disabled,
+.form-group select:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Styling untuk info harga */
 #info-harga {
-  font-size: 1.2em;
+  font-size: 1.2rem;
   font-weight: 600;
   text-align: center;
   padding: 15px;
-  margin: 15px 0;
-  background-color: #e6f2ff;
+  margin: 20px 0;
+  background-color: #e6f7ff;
   color: var(--primary-dark);
   border-radius: 10px;
+  border: 1px dashed var(--primary-color);
 }
-form button {
+
+/* === Perbedaan Tombol Primer & Sekunder === */
+
+/* Tombol Aksi Utama (Simpan & Cetak) */
+form button[type="submit"] {
   width: 100%;
   padding: 15px;
   border: none;
   border-radius: 12px;
-  font-size: 18px;
+  font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   color: white;
@@ -229,18 +265,87 @@ form button {
     var(--primary-color),
     var(--primary-dark)
   );
-  transition: transform 0.1s ease;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
 }
-form button:active {
-  transform: scale(0.98);
+form button[type="submit"]:hover {
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
 }
 
+/* Tombol Aksi Sampingan (Tambah Item) */
+.btn-secondary {
+  width: 100%;
+  padding: 14px; /* Sedikit lebih kecil */
+  border: 1px solid var(--primary-color);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--primary-color);
+  background-color: #fff;
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover {
+  background-color: #e6f7ff;
+  color: var(--primary-dark);
+}
+/* Styling untuk Grand Total agar di kanan dan menonjol */
+.total-container {
+  text-align: right; /* Pindahkan semua teks di dalamnya ke kanan */
+  margin-top: 20px; /* Jarak dari daftar item di atasnya */
+  padding-top: 15px; /* Jarak dari garis batas atas */
+  border-top: 2px solid #e9ecef; /* Garis pemisah di atas total */
+  font-size: 1.2rem; /* Ukuran font lebih besar */
+
+  color: var(--primary-dark); /* Warna teks agar konsisten */
+}
+
+/* Styling saat terjadi error */
 .error-message {
   color: var(--red-color);
-  font-size: 12px;
-  margin-top: 5px; /* Tarik sedikit ke atas agar lebih dekat dengan input */
-  margin-bottom: 10px;
-  display: block; /* Pastikan elemennya punya ruang */
+  font-size: 0.8rem;
+  margin-top: 6px;
+}
+.form-group input.is-invalid {
+  border-color: var(--red-color);
+  background-color: #fff8f8;
+}
+.form-group input.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+}
+
+/* === Pemisah Antar Bagian Form === */
+.section-divider {
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 30px 0 20px 0;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 20px;
+}
+/* Styling untuk bagian catatan di struk */
+/* Styling catatan struk agar sejajar (hemat ruang) */
+.struk-catatan {
+  display: flex; /* Membuat elemen di dalamnya sejajar */
+  align-items: baseline; /* Menyejajarkan teks berdasarkan garis bawahnya */
+  text-align: left;
+  margin: 10px 0;
+  font-size: 0.9rem; /* Ukuran font bisa diatur di sini */
+}
+
+/* Menghapus margin bawaan dari paragraf */
+.struk-catatan p {
+  margin: 0;
+}
+
+/* Memberi sedikit jarak setelah tulisan "Catatan:" */
+.struk-catatan p strong {
+  margin-right: 5px;
 }
 /* Kanban Board */
 .kanban-main {
@@ -516,31 +621,114 @@ form button:active {
   background-color: var(--font-color-light);
 }
 
-/* Style tambahan untuk struk multi-item */
+/* === STYLE STRUK LEBIH ESTETIK & MENONJOL === */
+
+/* Header struk */
+#struk-content h3 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+#struk-content p {
+  font-size: 1rem;
+  margin: 6px 0;
+  text-align: left;
+}
+
+#struk-content p strong {
+  font-weight: bold;
+}
+
+/* Informasi Pelanggan */
+.struk-pelanggan {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 15px 0;
+  text-align: left; /* Nama pelanggan rata kiri */
+}
+
+/* Daftar Item Pesanan */
 .struk-items-list {
   list-style: none;
   padding: 0;
-  margin: 10px 0;
+  margin: 20px 0;
 }
+
 .struk-item {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #000000;
 }
+
+.struk-item:last-child {
+  border-bottom: none;
+}
+
 .item-details {
   display: flex;
   flex-direction: column;
+  flex-grow: 1; /* Agar nama item bisa memanjang */
+  margin-right: 10px;
 }
+
+/* Nama Item - Dibuat lebih besar dan tebal */
 .item-name {
+  font-size: 1.2rem;
   font-weight: bold;
+  margin-bottom: 3px;
 }
+
 .item-package {
-  font-size: 0.9em;
-  color: #555;
+  font-size: 0.9rem;
+  color: #000000;
 }
+
+/* Harga Item - Dibuat sejajar kanan */
 .item-price {
+  font-size: 1.1rem;
   font-weight: bold;
   text-align: right;
+  white-space: nowrap;
+}
+
+.judul-item-struk {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #333;
+  text-align: left; /* <-- Diubah menjadi rata kiri */
+  margin-top: 20px;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #eee;
+}
+
+/* Total Harga - PALING MENONJOL (RATA KANAN) */
+#struk-content h4 {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  text-align: left;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 2px solid #333;
+}
+#struk-content h3 {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  text-align: right;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: 2px solid #333;
+}
+/* Footer Struk */
+#struk-content p:last-child {
+  margin-top: 15px;
+  font-style: italic;
+  color: #000000;
 }
 @media print {
   /*

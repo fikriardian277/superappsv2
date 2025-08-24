@@ -120,6 +120,10 @@ function renderFormKasir(pelanggan = null) {
                     <ul id="order-items-list" class="order-list-container"></ul>
                     <div class="total-container"><strong>Grand Total: <span id="grand-total">Rp 0</span></strong></div>
                     <div class="form-group"><label for="statusBayar">Status Pembayaran</label><select id="statusBayar" required><option value="Belum Lunas">Belum Lunas</option><option value="Lunas">Lunas</option></select></div>
+                    <div class="form-group">
+  <label for="catatanOrder">Catatan (Opsional)</label>
+  <textarea id="catatanOrder" rows="3" placeholder="Contoh: Jangan pakai pelembut, setrika bagian depan saja..."></textarea>
+</div>
                     <button type="submit" id="submitButton">Simpan & Cetak Struk</button>
                 </form>
             </main>
@@ -210,7 +214,7 @@ function renderStruk(transaksi) {
             <header class="header-simple"><h1>Struk Transaksi</h1></header>
             <main>
                 <div id="struk-content">
-                    <h3>SuperClean Laundry</h3><p>==============================</p>
+                    
                     <p><strong>ID Transaksi:</strong> ${transaksi.id}</p>
                     <p><strong>Tanggal:</strong> ${new Date(
                       transaksi.tanggal
@@ -218,13 +222,27 @@ function renderStruk(transaksi) {
                       dateStyle: "medium",
                       timeStyle: "short",
                     })}</p>
-                    <p><strong>Pelanggan:</strong> ${transaksi.nama}</p>
+                    <p class="struk-pelanggan"><strong>Pelanggan:</strong> ${
+                      transaksi.nama
+                    }</p>
                     <p>==============================</p>
                     <h4>Daftar Pesanan:</h4>
                     <ul class="struk-items-list">${itemsHtml}</ul>
                     <p>------------------------------</p>
-                    <h4>TOTAL: Rp ${grandTotal.toLocaleString("id-ID")}</h4>
+                    <h3>TOTAL: Rp ${grandTotal.toLocaleString("id-ID")}</h3>
+                    
                     <p><strong>Status: ${transaksi.statusBayar}</strong></p>
+                    ${
+                      transaksi.catatan
+                        ? `
+  <div class="struk-catatan">
+    <p><strong>Catatan:</strong></p>
+    <p>${transaksi.catatan}</p>
+  </div>
+  <p>------------------------------</p>
+`
+                        : ""
+                    }
                     <p>==============================</p>
                     <p>Terima kasih!</p>
                 </div>
@@ -455,7 +473,7 @@ async function handleFormSubmit(e) {
       throw new Error("Nama dan Nomor HP pelanggan wajib diisi.");
     }
     const noHp = normalizePhoneNumber(noHpRaw);
-
+    const catatan = document.getElementById("catatanOrder").value.trim();
     // --- Langkah B (BARU): Struk langsung ditampilkan, tidak perlu menunggu! ---
     // Kita buat objek struk dari data yang baru saja kita kumpulkan.
     renderStruk({
@@ -465,6 +483,7 @@ async function handleFormSubmit(e) {
       noHp,
       items: daftarItemsPesanan,
       statusBayar: statusBayar,
+      catatan: catatan,
     });
 
     // --- Langkah C (BARU): Proses penyimpanan berjalan di belakang layar ---
