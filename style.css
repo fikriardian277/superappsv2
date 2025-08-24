@@ -635,6 +635,7 @@ form button[type="submit"]:hover {
   font-size: 1rem;
   margin: 6px 0;
   text-align: left;
+  font-weight: bold;
 }
 
 #struk-content p strong {
@@ -643,7 +644,7 @@ form button[type="submit"]:hover {
 
 /* Informasi Pelanggan */
 .struk-pelanggan {
-  font-size: 1.3rem;
+  font-size: 1.2rem !important;
   font-weight: bold;
   margin: 15px 0;
   text-align: left; /* Nama pelanggan rata kiri */
@@ -651,9 +652,10 @@ form button[type="submit"]:hover {
 
 /* Daftar Item Pesanan */
 .struk-items-list {
-  list-style: none;
   padding: 0;
   margin: 20px 0;
+  font-weight: bold;
+  font-size: 1.5rem;
 }
 
 .struk-item {
