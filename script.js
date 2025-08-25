@@ -2,7 +2,7 @@
 // PENGATURAN - WAJIB DIISI
 // =================================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwhNlD0p0r6beOlDie6LIBJSJIRS1GHXM-rmuih9f7vRuxStEElnrthvgn4Hv48zAD0yg/exec";
+  "https://script.google.com/macros/s/AKfycbxr-3LoE0EVXNCZP-gEP10cWTjXM433eTvPQlthXT7rYh3OK9CgFeKjmlr3-NljRAPG/exec";
 
 // =================================================================
 // Variabel Global
