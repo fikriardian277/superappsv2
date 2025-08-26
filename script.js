@@ -2,7 +2,7 @@
 // PENGATURAN - WAJIB DIISI
 // =================================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxr-3LoE0EVXNCZP-gEP10cWTjXM433eTvPQlthXT7rYh3OK9CgFeKjmlr3-NljRAPG/exec";
+  "https://script.google.com/macros/s/AKfycbxhxa-Muj2lfJ5FHrSHCCkGJ9jZGXmGS9w4WwVZYte8GyfbUNbMzdh1ru7y7gZVHsmARg/exec";
 
 // =================================================================
 // Variabel Global
@@ -88,47 +88,204 @@ function renderDashboard() {
 function renderFormKasir(pelanggan = null) {
   setActiveNav("tambah");
   daftarItemsPesanan = [];
+
+  const isMember = pelanggan && pelanggan.Status_Member === "Aktif";
+  let memberStatusHtml = "";
+
+  if (pelanggan) {
+    if (isMember) {
+      const totalPoin = pelanggan.Total_Poin || 0;
+      memberStatusHtml = `
+        <div class="member-info">
+          <span class="badge member">Member Aktif 🌟</span>
+          <span class="poin">Poin: <b>${totalPoin}</b></span>
+          <button type="button" class="btn-tukar-poin" id="btnTukarPoin" ${
+            totalPoin > 0 ? "" : "disabled"
+          }>Tukar Poin</button>
+        </div>
+        <div class="form-group-checkbox">
+          <input type="checkbox" id="pakaiTotebag">
+          <label for="pakaiTotebag">Bawa & Pakai Totebag (Bonus 5 Poin)</label>
+        </div>
+      `;
+    } else {
+      // Tombol untuk mendaftarkan member
+      memberStatusHtml = `
+        <div class="member-info">
+          <span class="badge non-member">Non-Member</span>
+          <button type="button" class="btn-register" id="btnJadikanMember" 
+                  onclick="handleRegisterMember('${pelanggan.ID_Pelanggan}', '${pelanggan.Nama_Pelanggan}')">
+            Jadikan Member (Rp 50rb)
+          </button>
+        </div>
+      `;
+    }
+  }
+
   renderPage(`
-        <div class="page-container">
-            <header class="header-simple"><h1>Tambah Order Baru</h1></header>
-            <main class="form-container">
-                <form id="laundryForm">
-                    ${
-                      !pelanggan
-                        ? `<div class="form-group"><label for="searchPelanggan">Cari Pelanggan (Nama/HP)</label><input type="text" id="searchPelanggan" list="pelanggan-list" placeholder="Ketik untuk mencari..."><datalist id="pelanggan-list"></datalist></div>`
-                        : ""
-                    }
-                    <input type="hidden" id="idPelanggan" value="${
-                      pelanggan ? pelanggan.ID_Pelanggan || "" : ""
-                    }">
-                    <div class="form-group"><label for="namaPelanggan">Nama Pelanggan</label><input type="text" id="namaPelanggan" value="${
-                      pelanggan ? pelanggan.Nama_Pelanggan || "" : ""
-                    }" ${pelanggan ? "readonly" : ""} required></div>
-                    <div class="form-group"><label for="noHp">Nomor HP</label><input type="number" id="noHp" value="${
-                      pelanggan ? pelanggan.No_HP || "" : ""
-                    }" ${
+       <div class="page-container">
+          <header class="header-simple"><h1>Tambah Order Baru</h1></header>
+          <main class="form-container">
+              <form id="laundryForm">
+                  ${
+                    !pelanggan
+                      ? `<div class="form-group"><label for="searchPelanggan">Cari Pelanggan (Nama/HP)</label><input type="text" id="searchPelanggan" list="pelanggan-list" placeholder="Ketik untuk mencari..."><datalist id="pelanggan-list"></datalist></div>`
+                      : ""
+                  }
+                  <input type="hidden" id="idPelanggan" value="${
+                    pelanggan ? pelanggan.ID_Pelanggan || "" : ""
+                  }">
+                  <div class="form-group"><label for="namaPelanggan" class="required">Nama Pelanggan</label><input type="text" id="namaPelanggan" value="${
+                    pelanggan ? pelanggan.Nama_Pelanggan || "" : ""
+                  }" ${pelanggan ? "readonly" : ""} required></div>
+                  <div class="form-group"><label for="noHp" class="required">Nomor HP</label><input type="number" id="noHp" value="${
+                    pelanggan ? pelanggan.No_HP || "" : ""
+                  }" ${
     pelanggan ? "readonly" : ""
   } placeholder="62812..." required></div>
-                    <hr class="section-divider"><h4 class="section-title">Tambah Item Pesanan</h4>
-                    <div class="form-group"><label for="kategori">Kategori</label><select id="kategori"><option value="">-- Pilih --</option></select></div>
-                    <div class="form-group"><label for="layanan">Layanan</label><select id="layanan" disabled><option value="">-- Pilih --</option></select></div>
-                    <div class="form-group"><label for="paket">Paket</label><select id="paket" disabled><option value="">-- Pilih --</option></select></div>
-                    <div class="form-group"><label for="jumlah">Jumlah (KG/Pcs)</label><input type="number" id="jumlah" step="0.1" disabled></div>
-                    <div id="info-harga">Estimasi Harga: Rp 0</div>
-                    <button type="button" id="addItemButton" class="btn-secondary">Tambah Item</button>
-                    <hr class="section-divider"><h4 class="section-title">Daftar Pesanan</h4>
-                    <ul id="order-items-list" class="order-list-container"></ul>
-                    <div class="total-container"><strong>Grand Total: <span id="grand-total">Rp 0</span></strong></div>
-                    <div class="form-group"><label for="statusBayar">Status Pembayaran</label><select id="statusBayar" required><option value="Belum Lunas">Belum Lunas</option><option value="Lunas">Lunas</option></select></div>
-                    <div class="form-group">
-  <label for="catatanOrder">Catatan (Opsional)</label>
-  <textarea id="catatanOrder" rows="3" placeholder="Contoh: Jangan pakai pelembut, setrika bagian depan saja..."></textarea>
-</div>
-                    <button type="submit" id="submitButton">Simpan & Cetak Struk</button>
-                </form>
-            </main>
-        </div>`);
+
+                  <hr class="section-divider"><h4 class="section-title">Tambah Item Pesanan</h4>
+                  <div class="form-group"><label for="kategori">Kategori</label><select id="kategori"><option value="">-- Pilih --</option></select></div>
+                  <div class="form-group"><label for="layanan">Layanan</label><select id="layanan" disabled><option value="">-- Pilih --</option></select></div>
+                  <div class="form-group"><label for="paket">Paket</label><select id="paket" disabled><option value="">-- Pilih --</option></select></div>
+                  <div class="form-group"><label for="jumlah">Jumlah (KG/Pcs)</label><input type="number" id="jumlah" step="0.1" disabled></div>
+                  <div id="info-harga">Estimasi Harga: Rp 0</div>
+                  <button type="button" id="addItemButton" class="btn-secondary">Tambah Item</button>
+                  <hr class="section-divider"><h4 class="section-title">Daftar Pesanan</h4>
+                  <ul id="order-items-list" class="order-list-container"></ul>
+                  <div class="total-container"><strong>Grand Total: <span id="grand-total">Rp 0</span></strong></div>
+                  <div class="form-group"><label for="statusBayar">Status Pembayaran</label><select id="statusBayar" required><option value="Belum Lunas">Belum Lunas</option><option value="Lunas">Lunas</option></select></div>
+                  <div class="form-group"><label for="catatanOrder">Catatan (Opsional)</label><textarea id="catatanOrder" rows="3" placeholder="Contoh: Jangan pakai pelembut..."></textarea></div>
+
+                  <div id="member-actions-container"></div>
+
+                  <button type="submit" id="submitButton">Simpan & Cetak Struk</button>
+              </form>
+          </main>
+      </div>`);
   setupFormKasir(pelanggan);
+
+  if (isMember) {
+    const tombolTukar = document.getElementById("btnTukarPoin");
+    if (tombolTukar) {
+      // Tambahkan pengecekan untuk keamanan
+      tombolTukar.addEventListener("click", () =>
+        handleTukarPoin(pelanggan.Total_Poin || 0)
+      );
+    }
+  }
+}
+
+function updateMemberSection(pelanggan) {
+  const container = document.getElementById("member-actions-container");
+  if (!container) return; // Hentikan jika wadah tidak ditemukan
+
+  // Jika tidak ada data pelanggan (misal: form baru dibuka), kosongkan area member
+  if (!pelanggan) {
+    container.innerHTML = "";
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "block";
+  const totalPoin = pelanggan.Total_Poin || 0;
+
+  let memberActionsHtml = `
+    <h5>⭐ Opsi Member</h5>
+    <div class="member-info">
+      <div>
+        <span class="badge member">Member Aktif</span>
+        <span class="poin">Poin: <b>${totalPoin}</b></span>
+      </div>
+      <button type="button" class="btn-tukar-poin" id="btnTukarPoin" ${
+        totalPoin > 0 ? "" : "disabled"
+      }>Tukar Poin</button>
+    </div>
+    <div class="form-group-checkbox">
+      <input type="checkbox" id="pakaiTotebag">
+      <label for="pakaiTotebag">Bawa & Pakai Totebag (Bonus 5 Poin)</label>
+    </div>
+  `;
+
+  container.innerHTML = memberActionsHtml;
+
+  const tombolTukar = document.getElementById("btnTukarPoin");
+  if (tombolTukar) {
+    tombolTukar.addEventListener("click", () => handleTukarPoin(totalPoin));
+  }
+
+  const isMember = pelanggan.Status_Member === "Aktif";
+  let memberStatusHtml = "";
+
+  if (isMember) {
+    const totalPoin = pelanggan.Total_Poin || 0;
+    memberStatusHtml = `
+      <div class="member-info">
+        <span class="badge member">Member Aktif 🌟</span>
+        <span class="poin">Poin: <b>${totalPoin}</b></span>
+        <button type="button" class="btn-tukar-poin" id="btnTukarPoin" ${
+          totalPoin > 0 ? "" : "disabled"
+        }>Tukar Poin</button>
+      </div>
+      <div class="form-group-checkbox">
+        <input type="checkbox" id="pakaiTotebag">
+        <label for="pakaiTotebag">Bawa & Pakai Totebag (Bonus 5 Poin)</label>
+      </div>
+    `;
+  } else {
+    memberStatusHtml = `
+      <div class="member-info">
+        <span class="badge non-member">Non-Member</span>
+        <button type="button" class="btn-register" id="btnJadikanMember" 
+                onclick="handleRegisterMember('${pelanggan.ID_Pelanggan}', '${pelanggan.Nama_Pelanggan}')">
+          Jadikan Member (Rp 50rb)
+        </button>
+      </div>
+    `;
+  }
+
+  // Masukkan HTML ke dalam wadah
+  container.innerHTML = memberStatusHtml;
+
+  // Tambahkan event listener untuk tombol Tukar Poin SETELAH tombolnya dibuat
+  if (isMember) {
+    const tombolTukar = document.getElementById("btnTukarPoin");
+    if (tombolTukar) {
+      tombolTukar.addEventListener("click", () =>
+        handleTukarPoin(pelanggan.Total_Poin || 0)
+      );
+    }
+  }
+}
+
+function handleTukarPoin(poinSaatIni) {
+  // Hapus diskon lama jika ada, agar tidak dobel
+  daftarItemsPesanan = daftarItemsPesanan.filter((item) => !item.isDiscount);
+
+  const poinDitebus = parseInt(
+    prompt(
+      `Anda punya ${poinSaatIni} poin. Berapa poin yang ingin ditukar? (1 poin = Rp 100)`
+    )
+  );
+
+  if (isNaN(poinDitebus) || poinDitebus <= 0) {
+    renderOrderList(); // Render ulang untuk hapus diskon jika input batal
+    return;
+  }
+  if (poinDitebus > poinSaatIni) {
+    alert("Poin Anda tidak mencukupi!");
+    return;
+  }
+
+  const nilaiDiskon = poinDitebus * 100;
+  daftarItemsPesanan.push({
+    layanan: `Diskon Poin (-${poinDitebus} Poin)`,
+    subtotal: -nilaiDiskon, // Nilai negatif untuk pengurang
+    isDiscount: true,
+    poinDitebus: poinDitebus,
+  });
+
+  renderOrderList();
 }
 
 function renderKanban(filter = "semua") {
@@ -184,6 +341,8 @@ function renderPelanggan() {
     .addEventListener("input", (e) => updatePelangganList(e.target.value));
 }
 
+// GANTI LAGI SELURUH FUNGSI renderStruk ANDA DENGAN VERSI FINAL INI
+// GANTI LAGI SELURUH FUNGSI renderStruk ANDA DENGAN VERSI FINAL INI
 function renderStruk(transaksi) {
   if (!transaksi.items || !Array.isArray(transaksi.items)) {
     transaksi.items = [];
@@ -195,64 +354,71 @@ function renderStruk(transaksi) {
   const itemsHtml = transaksi.items
     .map(
       (item) => `
-        <li class="struk-item">
-            <div class="item-details">
-                <span class="item-name">${item.layanan}</span>
-                <span class="item-package">${item.paket} (${item.jumlah} ${
-        item.kategori === "Kiloan" ? "kg" : "pcs"
-      })</span>
-            </div>
-            <span class="item-price">Rp ${item.subtotal.toLocaleString(
-              "id-ID"
-            )}</span>
-        </li>`
+      <div class="struk-item">
+        <div class="item-details">
+          <span class="item-name">${item.layanan}</span>
+          <span class="item-package">${
+            item.paket ||
+            `${item.jumlah} ${item.kategori === "Kiloan" ? "kg" : "pcs"}`
+          }</span>
+        </div>
+        <span class="item-price">Rp${item.subtotal.toLocaleString(
+          "id-ID"
+        )}</span>
+      </div>`
     )
     .join("");
 
-  renderPage(`
-        <div class="page-container struk-container">
-            <header class="header-simple"><h1>Struk Transaksi</h1></header>
-            <main>
-                <div id="struk-content">
-                    
-                    <p><strong>ID Transaksi:</strong> ${transaksi.id}</p>
-                    <p><strong>Tanggal:</strong> ${new Date(
-                      transaksi.tanggal
-                    ).toLocaleString("id-ID", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}</p>
-                    <p class="struk-pelanggan"><strong>Pelanggan:</strong> ${
-                      transaksi.nama
-                    }</p>
-                    <p>==============================</p>
-                    <h4>Daftar Pesanan:</h4>
-                    <ul class="struk-items-list">${itemsHtml}</ul>
-                    <p>------------------------------</p>
-                    <h3>TOTAL: Rp ${grandTotal.toLocaleString("id-ID")}</h3>
-                    
-                    <p><strong>Status: ${transaksi.statusBayar}</strong></p>
-                    ${
-                      transaksi.catatan
-                        ? `
-  <div class="struk-catatan">
-    <p><strong>Catatan:</strong></p>
-    <p>${transaksi.catatan}</p>
-  </div>
-  <p>------------------------------</p>
-`
-                        : ""
-                    }
-                    <p>==============================</p>
-                    <p>Terima kasih!</p>
-                </div>
-                <div class="struk-actions">
-                    <button id="tombol-cetak">🖨️ Cetak Struk</button>
-                    <button id="tombol-wa">💬 Kirim via WhatsApp</button>
-                    <button id="tombol-kembali">Kembali ke Dashboard</button>
-                </div>
-            </main>
-        </div>`);
+  const strukHtml = `
+    <div class="page-container struk-container">
+      <main>
+        <div id="struk-content">
+          <div class="struk-header">
+            <p>Jl. Kode Indah No. 123, Bandung</p>
+            <p>Telp: 0812-3456-7890</p>
+          </div>
+          <div class="struk-info">
+            <p>ID: ${transaksi.transaksiId || transaksi.id}</p>
+            <p>Tgl: ${new Date(transaksi.tanggal).toLocaleString("id-ID", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}</p>
+          </div>
+          <div class="struk-pelanggan">
+            <p>Pelanggan:</p>
+            <p class="struk-pelanggan-nama">${transaksi.nama}</p>
+          </div>
+          <div class="struk-items-list">
+            ${itemsHtml}
+          </div>
+          <div class="struk-total">
+            <h3>TOTAL: Rp${grandTotal.toLocaleString("id-ID")}</h3>
+          </div>
+          <p>Status: <strong>${transaksi.statusBayar}</strong></p>
+          ${
+            transaksi.catatan
+              ? `<div class="struk-catatan"><p>Catatan: ${transaksi.catatan}</p></div>`
+              : ""
+          }
+          <p class="struk-separator">-------------------------</p>
+          <div class="struk-footer">
+            <p>Terima Kasih!</p>
+            <p>Simpan struk ini sebagai bukti.</p>
+          </div>
+        </div>
+        <div class="struk-actions">
+          <button id="tombol-cetak">🖨️ Cetak Struk</button>
+          <button id="tombol-wa">💬 Kirim via WhatsApp</button>
+          <button id="tombol-kembali">Kembali ke Dashboard</button>
+        </div>
+      </main>
+    </div>
+  `;
+
+  renderPage(strukHtml);
 
   document
     .getElementById("tombol-cetak")
@@ -284,6 +450,7 @@ function renderDetailTransaksi(transactionId) {
     nama: trxPertama.Nama_Pelanggan,
     noHp: trxPertama.No_HP,
     statusBayar: trxPertama.Status_Bayar,
+    catatan: trxPertama.Catatan,
     items: itemsTransaksi.map((item) => ({
       kategori: item.Kategori,
       layanan: item.Layanan,
@@ -314,6 +481,15 @@ function setupFormKasir(pelanggan = null) {
     datalist = document.getElementById("pelanggan-list"),
     addItemButton = document.getElementById("addItemButton");
 
+  const errorContainer = document.createElement("p");
+  errorContainer.className = "error-message";
+  // Selipkan wadah error tepat setelah input nama pelanggan
+  namaPelanggan.parentNode.insertBefore(
+    errorContainer,
+    namaPelanggan.nextSibling
+  );
+  // --------------------------------------------------------
+
   // --- LOGIKA PENCARIAN & "SATPAM" DUPLIKAT PELANGGAN ---
   if (searchPelanggan) {
     const errorContainer = document.createElement("p");
@@ -339,40 +515,67 @@ function setupFormKasir(pelanggan = null) {
         (opt) => opt.value === e.target.value
       );
       if (option) {
-        idPelanggan.value = option.dataset.id;
-        namaPelanggan.value = option.dataset.nama;
-        noHp.value = option.dataset.nohp;
-        namaPelanggan.readOnly = true;
-        noHp.readOnly = true;
-        errorContainer.textContent = "";
+        // Jika pelanggan ditemukan di daftar
+        const fullData = daftarPelanggan.find(
+          (p) => p.ID_Pelanggan === option.dataset.id
+        );
+        if (fullData) {
+          // Isi form dan update area member
+          idPelanggan.value = fullData.ID_Pelanggan;
+          namaPelanggan.value = fullData.Nama_Pelanggan;
+          noHp.value = fullData.No_HP;
+          namaPelanggan.readOnly = true;
+          noHp.readOnly = true;
+          updateMemberSection(fullData); // <-- KUNCI PERUBAHANNYA ADA DI SINI
+        }
       } else if (e.target.value === "") {
+        // Jika input pencarian dikosongkan
         idPelanggan.value = "";
         namaPelanggan.value = "";
         noHp.value = "";
         namaPelanggan.readOnly = false;
         noHp.readOnly = false;
+        updateMemberSection(null); // <-- Kosongkan juga area member
       }
     });
 
+    namaPelanggan.addEventListener("blur", cekDuplikat);
+    noHp.addEventListener("blur", cekDuplikat);
+
     function cekDuplikat() {
-      if (idPelanggan.value) return;
-      const namaInput = namaPelanggan.value.trim().toLowerCase();
-      let noHpInput = noHp.value.trim();
-      if (!namaInput && !noHpInput) {
+      const idPelanggan = document.getElementById("idPelanggan").value;
+      // Jika sudah ada ID Pelanggan (artinya pelanggan lama), hentikan fungsi ini
+      if (idPelanggan) return;
+
+      const namaPelangganEl = document.getElementById("namaPelanggan");
+      const noHpEl = document.getElementById("noHp");
+      const errorContainer = document.querySelector(".error-message");
+      const submitButton = document.getElementById("submitButton");
+
+      if (!errorContainer || !submitButton) return;
+
+      const namaInput = namaPelangganEl.value.trim().toLowerCase();
+      let noHpInput = noHpEl.value.trim();
+
+      // Jangan cek jika kedua input masih kosong
+      if (namaInput === "" && noHpInput === "") {
         errorContainer.textContent = "";
         submitButton.disabled = false;
         return;
       }
+
       if (noHpInput) noHpInput = normalizePhoneNumber(noHpInput);
+
       const duplikat = daftarPelanggan.find(
         (p) =>
-          (p.Nama_Pelanggan &&
-            p.Nama_Pelanggan.toLowerCase() === namaInput &&
-            namaInput !== "") ||
-          (p.No_HP &&
-            normalizePhoneNumber(String(p.No_HP)) === noHpInput &&
-            noHpInput !== "")
+          (namaInput !== "" &&
+            p.Nama_Pelanggan &&
+            p.Nama_Pelanggan.toLowerCase() === namaInput) ||
+          (noHpInput !== "" &&
+            p.No_HP &&
+            normalizePhoneNumber(String(p.No_HP)) === noHpInput)
       );
+
       if (duplikat) {
         errorContainer.textContent = `*Pelanggan sudah terdaftar. Silakan cari di atas.`;
         submitButton.disabled = true;
@@ -449,8 +652,11 @@ function setupFormKasir(pelanggan = null) {
 
   addItemButton.addEventListener("click", addItemToOrder);
   form.addEventListener("submit", handleFormSubmit);
+  updateMemberSection(pelanggan);
 }
 
+// GANTI SELURUH FUNGSI handleFormSubmit LAMA DENGAN INI
+// GANTI SELURUH FUNGSI handleFormSubmit LAMA DENGAN VERSI FINAL INI
 async function handleFormSubmit(e) {
   e.preventDefault();
   const submitButton = document.getElementById("submitButton");
@@ -458,117 +664,196 @@ async function handleFormSubmit(e) {
   submitButton.innerHTML = 'Memproses... <div class="spinner-kecil"></div>';
 
   try {
-    // --- Langkah A: Kumpulkan semua data dari form ---
-    let pelangganId = document.getElementById("idPelanggan").value;
-    let nama = document.getElementById("namaPelanggan").value.trim();
-    let noHpRaw = document.getElementById("noHp").value.trim();
-    const statusBayar = document.getElementById("statusBayar").value;
-    const tanggalSekarang = new Date().toISOString();
-    const transaksiId = `SCLN-${Date.now()}`;
-
-    if (daftarItemsPesanan.length === 0) {
+    // Validasi Awal
+    const nama = document.getElementById("namaPelanggan").value.trim();
+    const noHpRaw = document.getElementById("noHp").value.trim();
+    if (daftarItemsPesanan.length === 0)
       throw new Error("Mohon tambahkan setidaknya satu item pesanan.");
-    }
-    if (!nama || !noHpRaw) {
+    if (!nama || !noHpRaw)
       throw new Error("Nama dan Nomor HP pelanggan wajib diisi.");
-    }
-    const noHp = normalizePhoneNumber(noHpRaw);
-    const catatan = document.getElementById("catatanOrder").value.trim();
-    // --- Langkah B (BARU): Struk langsung ditampilkan, tidak perlu menunggu! ---
-    // Kita buat objek struk dari data yang baru saja kita kumpulkan.
-    renderStruk({
-      id: transaksiId,
-      tanggal: tanggalSekarang,
-      nama,
-      noHp,
+
+    // Siapkan Payload Lengkap
+    const pelangganId = document.getElementById("idPelanggan").value;
+    const pakaiTotebag = document.getElementById("pakaiTotebag")
+      ? document.getElementById("pakaiTotebag").checked
+      : false;
+    const diskonItem = daftarItemsPesanan.find((item) => item.isDiscount);
+    const poinDitebus = diskonItem ? diskonItem.poinDitebus : 0;
+
+    const payload = {
+      pelangganId: pelangganId,
       items: daftarItemsPesanan,
-      statusBayar: statusBayar,
-      catatan: catatan,
-    });
-
-    // --- Langkah C (BARU): Proses penyimpanan berjalan di belakang layar ---
-    // Fungsi ini akan berjalan tanpa membuat UI menunggu (tanpa 'await')
-    const prosesPenyimpananBelakangLayar = async () => {
-      // Logika untuk pelanggan baru (jika ada)
-      if (!pelangganId) {
-        // Karena ini berjalan di latar belakang, kita tidak bisa pakai 'confirm'
-        // Kita asumsikan langsung daftar pelanggan baru
-        try {
-          const response = await fetch(API_URL, {
-            method: "POST",
-            body: JSON.stringify({
-              action: "addNewCustomer",
-              customerData: { nama, noHp },
-            }),
-          });
-          const result = await response.json();
-          if (result.status === "success") {
-            pelangganId = result.newId;
-            // Update data pelanggan lokal
-            daftarPelanggan.push({
-              ID_Pelanggan: pelangganId,
-              Nama_Pelanggan: nama,
-              No_HP: noHp,
-            });
-          }
-        } catch (e) {
-          console.error(
-            "Gagal mendaftarkan pelanggan baru di latar belakang:",
-            e
-          );
-        }
-      }
-
-      // Kirim setiap item pesanan ke Google Sheet
-      for (const item of daftarItemsPesanan) {
-        const transaksiItem = {
-          id: transaksiId,
-          pelangganId,
-          nama,
-          noHp,
-          kategori: item.kategori,
-          layanan: item.layanan,
-          paket: item.paket,
-          jumlah: item.jumlah,
-          total: item.subtotal,
-          statusBayar: statusBayar,
-          tanggal: tanggalSekarang,
-          status: "Diterima", // Status awal saat order dibuat
-        };
-
-        // Update data transaksi lokal secara manual
-        semuaTransaksi.push({
-          ID_Transaksi: transaksiId,
-          ID_Pelanggan: pelangganId,
-          Nama_Pelanggan: nama,
-          No_HP: noHp,
-          Kategori: item.kategori,
-          Layanan: item.layanan,
-          Paket: item.paket,
-          Jumlah: item.jumlah,
-          Total_Harga: item.subtotal,
-          Status_Bayar: statusBayar,
-          Tanggal_Masuk: tanggalSekarang,
-          Status: "Diterima",
-        });
-
-        // Kirim ke sheet (akan otomatis masuk antrian offline jika gagal)
-        kirimDataKeSheet(transaksiItem);
-      }
-
-      // Reset daftar item untuk order selanjutnya
-      daftarItemsPesanan = [];
+      pakaiTotebag: pakaiTotebag,
+      poinDitebus: poinDitebus,
+      transaksiId: `SCLN-${Date.now()}`,
+      tanggal: new Date().toISOString(),
+      statusBayar: document.getElementById("statusBayar").value,
+      nama: nama,
+      noHp: normalizePhoneNumber(noHpRaw),
+      catatan: document.getElementById("catatanOrder").value.trim(),
     };
 
-    // Jalankan prosesnya
-    prosesPenyimpananBelakangLayar();
+    // LANGKAH B (BARU): Tampilkan Struk & Update UI Lokal SECARA INSTAN
+    console.log("Menampilkan struk dan update UI lokal secara instan.");
+    renderStruk(payload);
+    updateDataLokal(payload); // Fungsi baru untuk update data di variabel global
+
+    // LANGKAH C (BARU): Jalankan Proses Kirim ke Server di Latar Belakang
+    // Perhatikan: kita tidak menggunakan 'await' di sini agar UI tidak menunggu.
+    console.log("Memulai pengiriman data ke server di latar belakang...");
+    kirimDataLatarBelakang(payload);
+
+    daftarItemsPesanan = []; // Kosongkan keranjang
+
+    // --- LOGIKA BARU: KIRIM VIA GET ---
+    // 1. Ubah objek payload menjadi string JSON
+    const stringifiedPayload = JSON.stringify(payload);
+    // 2. Encode string tersebut agar aman dikirim via URL
+    const encodedPayload = encodeURIComponent(stringifiedPayload);
+    // 3. Buat URL lengkap dengan parameter
+    const urlWithParams = `${API_URL}?action=saveTransaction&payload=${encodedPayload}`;
+
+    // 4. Kirim request GET yang simpel
+    const response = await fetch(urlWithParams);
+    const result = await response.json();
+    if (result.status !== "success") {
+      throw new Error(result.message || "Server mengembalikan error.");
+    }
+
+    // Tampilkan struk dan bersihkan form
+    renderStruk(payload);
+
+    daftarItemsPesanan = [];
+    await muatDataAwal();
   } catch (error) {
-    // Error yang ditangkap di sini adalah error validasi form, bukan error koneksi
-    console.error("Error saat validasi form:", error);
+    console.error("Error saat submit form:", error);
     alert("Terjadi kesalahan: " + error.message);
+  } finally {
     submitButton.disabled = false;
     submitButton.textContent = "Simpan & Cetak Struk";
   }
+}
+
+/**
+ * [BARU] Mengirim data ke server di latar belakang. Jika gagal, simpan ke antrian.
+ * @param {object} payload - Data transaksi lengkap.
+ */
+async function kirimDataLatarBelakang(payload) {
+  try {
+    const stringifiedPayload = JSON.stringify(payload);
+    const encodedPayload = encodeURIComponent(stringifiedPayload);
+    const urlWithParams = `${API_URL}?action=saveTransaction&payload=${encodedPayload}`;
+
+    const response = await fetch(urlWithParams);
+    const result = await response.json();
+    if (result.status !== "success") {
+      throw new Error(result.message || "Server mengembalikan error.");
+    }
+    console.log(
+      `Transaksi ${payload.transaksiId} berhasil disinkronkan ke server.`
+    );
+  } catch (error) {
+    console.warn(
+      `Gagal mengirim transaksi ${payload.transaksiId}. Menyimpan ke antrian offline.`,
+      error
+    );
+    simpanKeAntrianOffline(payload); // Jika gagal, simpan!
+  }
+}
+
+/**
+ * [BARU] Menyimpan data transaksi yang gagal dikirim ke localStorage.
+ * @param {object} payload - Data transaksi lengkap.
+ */
+function simpanKeAntrianOffline(payload) {
+  // Ambil antrian yang sudah ada, atau buat array baru jika belum ada
+  const antrian = JSON.parse(localStorage.getItem("antrianOffline")) || [];
+  antrian.push(payload);
+  localStorage.setItem("antrianOffline", JSON.stringify(antrian));
+  console.log(
+    `Transaksi ${payload.transaksiId} telah ditambahkan ke antrian offline.`
+  );
+}
+
+/**
+ * [BARU] Mencoba mengirim semua data di antrian offline ke server.
+ */
+async function sinkronkanDataOffline() {
+  const antrian = JSON.parse(localStorage.getItem("antrianOffline")) || [];
+  if (antrian.length === 0) {
+    console.log("Tidak ada data offline untuk disinkronkan.");
+    return; // Hentikan jika tidak ada apa-apa di antrian
+  }
+
+  console.log(
+    `Mencoba sinkronisasi ${antrian.length} transaksi dari antrian offline...`
+  );
+  const antrianBaru = []; // Untuk menyimpan data yang masih gagal
+
+  for (const payload of antrian) {
+    try {
+      const stringifiedPayload = JSON.stringify(payload);
+      const encodedPayload = encodeURIComponent(stringifiedPayload);
+      const urlWithParams = `${API_URL}?action=saveTransaction&payload=${encodedPayload}`;
+
+      const response = await fetch(urlWithParams);
+      const result = await response.json();
+      if (result.status === "success") {
+        console.log(
+          `Transaksi ${payload.transaksiId} dari antrian berhasil disinkronkan.`
+        );
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.warn(
+        `Transaksi ${payload.transaksiId} masih gagal disinkronkan, tetap di antrian.`,
+        error
+      );
+      antrianBaru.push(payload); // Masukkan kembali ke antrian jika masih gagal
+    }
+  }
+
+  // Simpan sisa antrian yang masih gagal
+  localStorage.setItem("antrianOffline", JSON.stringify(antrianBaru));
+
+  // Jika ada perubahan, muat ulang semua data dari server untuk memastikan konsistensi
+  if (antrianBaru.length < antrian.length) {
+    console.log("Sinkronisasi selesai, memuat ulang data terbaru...");
+    await muatDataAwal();
+  }
+}
+
+/**
+ * [BARU] Mengupdate variabel data global (semuaTransaksi) secara manual.
+ * @param {object} payload - Data transaksi yang baru dibuat.
+ */
+function updateDataLokal(payload) {
+  // Menambahkan setiap item transaksi ke variabel global semuaTransaksi
+  payload.items.forEach((item) => {
+    semuaTransaksi.push({
+      ID_Transaksi: payload.transaksiId,
+      ID_Pelanggan: payload.pelangganId,
+      Nama_Pelanggan: payload.nama,
+      No_HP: payload.noHp,
+      Kategori: item.kategori,
+      Layanan: item.layanan,
+      Paket: item.paket,
+      Jumlah: item.jumlah,
+      Total_Harga: item.subtotal,
+      Status_Bayar: payload.statusBayar,
+      Tanggal_Masuk: payload.tanggal,
+      Status: "Diterima",
+      Catatan: payload.catatan,
+    });
+  });
+
+  // Jika pelanggan baru, tambahkan juga ke daftarPelanggan (opsional, tapi bagus)
+  if (!payload.pelangganId) {
+    // Untuk mendapatkan ID pelanggan baru, kita perlu sedikit penyesuaian
+    // Tapi untuk sekarang, ini sudah cukup untuk membuat UI konsisten
+  }
+  console.log("Variabel data lokal telah diupdate.");
 }
 
 function hitungStatistik() {
@@ -811,28 +1096,72 @@ function updatePelangganList(filter = "") {
       : "<li>Tidak ada pelanggan ditemukan.</li>";
 }
 
+// GANTI SELURUH FUNGSI renderKanbanCards LAMA DENGAN VERSI FINAL INI
 function renderKanbanCards(filter = "semua") {
   const counts = { diterima: 0, "proses-cuci": 0, "siap-diambil": 0 };
   document.querySelectorAll(".kanban-cards").forEach((c) => (c.innerHTML = ""));
 
-  const groupedByStatus = semuaTransaksi.reduce((acc, trx) => {
-    if (trx.Status !== "Selesai") {
-      acc[trx.ID_Transaksi] = trx;
-    }
-    return acc;
-  }, {});
+  // LANGKAH A: Kelompokkan semua item berdasarkan ID Transaksi yang sama
+  const groupedTransactions = Object.values(
+    semuaTransaksi.reduce((acc, trx) => {
+      if (trx.Status && trx.Status !== "Selesai") {
+        if (!acc[trx.ID_Transaksi]) {
+          acc[trx.ID_Transaksi] = {
+            ...trx,
+            items: [],
+          };
+        }
+        acc[trx.ID_Transaksi].items.push({
+          paket: trx.Paket,
+          layanan: trx.Layanan,
+        });
+      }
+      return acc;
+    }, {})
+  );
 
-  let transaksiUntukDitampilkan = Object.values(groupedByStatus);
+  // LANGKAH B: Urutkan transaksi. Prioritas utama adalah paket ekspres.
+  groupedTransactions.sort((a, b) => {
+    const prioritasA = a.items.some((item) =>
+      String(item.paket).toLowerCase().includes("expres")
+    );
+    const prioritasB = b.items.some((item) =>
+      String(item.paket).toLowerCase().includes("expres")
+    );
+
+    if (prioritasA && !prioritasB) return -1;
+    if (!prioritasA && prioritasB) return 1;
+
+    return new Date(a.Tanggal_Masuk) - new Date(b.Tanggal_Masuk);
+  });
+
+  let transaksiUntukDitampilkan = groupedTransactions;
   if (filter !== "semua") {
     transaksiUntukDitampilkan = transaksiUntukDitampilkan.filter(
       (t) => t.Status === filter
     );
   }
 
-  const statusValues = ["Diterima", "Proses Cuci", "Siap Diambil", "Selesai"];
+  // LANGKAH C: Render setiap kartu dengan logika deadline
   transaksiUntukDitampilkan.forEach((trx) => {
     const card = document.createElement("div");
-    card.className = "kanban-card";
+    const tanggalMasuk = new Date(trx.Tanggal_Masuk);
+    const sekarang = new Date();
+    const selisihJam = (sekarang - tanggalMasuk) / (1000 * 60 * 60);
+
+    const deadlineTerpendek = Math.min(
+      ...trx.items.map((item) => getDeadlineHours(item.paket))
+    );
+
+    const ambangBatasWaktu = deadlineTerpendek * 0.7;
+    let waktuMepet = selisihJam > ambangBatasWaktu;
+
+    card.className = `kanban-card ${waktuMepet ? "mepet" : ""}`;
+
+    const itemsHtml = trx.items
+      .map((item) => `<span class="paket-label">${item.paket}</span>`)
+      .join(" ");
+    const statusValues = ["Diterima", "Proses Cuci", "Siap Diambil", "Selesai"];
     const options = statusValues
       .map(
         (status) =>
@@ -843,13 +1172,27 @@ function renderKanbanCards(filter = "semua") {
       .join("");
     const statusBayar = (trx.Status_Bayar || "Belum Lunas").trim();
     const statusBayarClass = statusBayar.toLowerCase().replace(" ", "-");
+
     card.innerHTML = `
-            <h4>${trx.Nama_Pelanggan}</h4>
-            <p>${trx.ID_Transaksi}</p>
-            <div class="card-footer">
-                <span class="payment-status ${statusBayarClass}">${statusBayar}</span>
-                <select class="status-select" data-id="${trx.ID_Transaksi}" data-nohp="${trx.No_HP}" data-nama="${trx.Nama_Pelanggan}">${options}</select>
-            </div>`;
+      <div class="card-header">
+          <h4>${trx.Nama_Pelanggan}</h4>
+          ${
+            waktuMepet
+              ? '<span class="deadline-warning">⚠️ Deadline</span>'
+              : ""
+          }
+      </div>
+      <p>${trx.ID_Transaksi}</p>
+      <div class="card-details">${itemsHtml}</div>
+      <div class="card-footer">
+        <span class="payment-status ${statusBayarClass}">${statusBayar}</span>
+        <select class="status-select" data-id="${
+          trx.ID_Transaksi
+        }" data-nohp="${trx.No_HP}" data-nama="${
+      trx.Nama_Pelanggan
+    }">${options}</select>
+      </div>`;
+
     const statusKey = trx.Status.replace(/ /g, "-").toLowerCase();
     const colId = `col-${statusKey}`;
     const columnContent = document.querySelector(`#${colId} .kanban-cards`);
@@ -858,6 +1201,7 @@ function renderKanbanCards(filter = "semua") {
       if (counts.hasOwnProperty(statusKey)) counts[statusKey]++;
     }
   });
+
   document.getElementById("count-diterima").textContent = counts.diterima;
   document.getElementById("count-proses-cuci").textContent =
     counts["proses-cuci"];
@@ -1015,4 +1359,80 @@ function setActiveNav(id) {
     .forEach((btn) => btn.classList.remove("active"));
   const activeBtn = document.getElementById(`nav-${id}`);
   if (activeBtn) activeBtn.classList.add("active");
+}
+
+// TAMBAHKAN FUNGSI BARU INI DI MANA SAJA DALAM script.js
+/**
+ * Menangani proses pendaftaran member dengan mengirim data ke backend.
+ * @param {string} pelangganId - ID pelanggan yang akan didaftarkan.
+ * @param {string} namaPelanggan - Nama pelanggan untuk konfirmasi.
+ */
+async function handleRegisterMember(pelangganId, namaPelanggan) {
+  if (
+    !confirm(
+      `Anda yakin ingin mendaftarkan ${namaPelanggan} sebagai member dengan biaya Rp 50.000?`
+    )
+  ) {
+    return;
+  }
+
+  const registerButton = document.getElementById("btnJadikanMember");
+  registerButton.disabled = true;
+  registerButton.innerHTML = 'Memproses... <div class="spinner-kecil"></div>';
+
+  try {
+    // MEMBUAT URL DENGAN PARAMETER (LOGIKA BARU)
+    const urlWithParams = `${API_URL}?action=registerMember&id=${pelangganId}&nama=${encodeURIComponent(
+      namaPelanggan
+    )}`;
+
+    // MENGGUNAKAN FETCH GET YANG SIMPEL (LOGIKA BARU)
+    const response = await fetch(urlWithParams);
+
+    const result = await response.json();
+    if (result.status !== "success") {
+      throw new Error(result.message);
+    }
+
+    alert(`${namaPelanggan} berhasil didaftarkan sebagai member!`);
+
+    const container = document.getElementById("member-status-container");
+    container.innerHTML = `<div class="member-info"><span class="badge member">Member Aktif ✅</span></div>`;
+
+    const pelangganIndex = daftarPelanggan.findIndex(
+      (p) => p.ID_Pelanggan === pelangganId
+    );
+    if (pelangganIndex > -1) {
+      daftarPelanggan[pelangganIndex].Status_Member = "Aktif";
+    }
+  } catch (error) {
+    alert("Gagal mendaftarkan member: " + error.message);
+    registerButton.disabled = false;
+    registerButton.textContent = "Jadikan Member (Rp 50rb)";
+  }
+}
+
+/**
+ * Mengubah nama paket layanan menjadi durasi deadline dalam format jam.
+ * @param {string} namaPaket - Contoh: "Ekspres 8 Jam" atau "Reguler 3 Hari".
+ * @returns {number} - Durasi deadline dalam jam.
+ */
+function getDeadlineHours(namaPaket) {
+  if (!namaPaket) return 72; // Default 3 hari jika nama paket kosong
+
+  const nama = namaPaket.toLowerCase();
+  // Mencari angka pertama di dalam teks (misal: dari "Kilat 2 Jam", akan dapat "2")
+  const angkaMatch = nama.match(/\d+/);
+
+  if (!angkaMatch) return 72; // Default jika tidak ada angka sama sekali
+
+  let durasi = parseInt(angkaMatch[0]);
+
+  // Jika nama paket mengandung kata "hari", ubah durasi ke jam
+  if (nama.includes("hari")) {
+    return durasi * 24;
+  }
+
+  // Jika tidak, asumsikan durasinya sudah dalam jam
+  return durasi;
 }

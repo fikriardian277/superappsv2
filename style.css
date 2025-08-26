@@ -623,170 +623,124 @@ form button[type="submit"]:hover {
 
 /* === STYLE STRUK LEBIH ESTETIK & MENONJOL === */
 
-/* Header struk */
-#struk-content h3 {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 8px;
-  text-align: center;
-}
+/* ======================================= */
+/* STYLE STRUK 58MM (UNTUK TAMPILAN PRINT) */
+/* ======================================= */
 
-#struk-content p {
-  font-size: 1rem;
-  margin: 6px 0;
-  text-align: left;
-  font-weight: bold;
-}
-
-#struk-content p strong {
-  font-weight: bold;
-}
-
-/* Informasi Pelanggan */
-.struk-pelanggan {
-  font-size: 1.2rem !important;
-  font-weight: bold;
-  margin: 15px 0;
-  text-align: left; /* Nama pelanggan rata kiri */
-}
-
-/* Daftar Item Pesanan */
-.struk-items-list {
-  padding: 0;
-  margin: 20px 0;
-  font-weight: bold;
-  font-size: 1.5rem;
-}
-
-.struk-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #000000;
-}
-
-.struk-item:last-child {
-  border-bottom: none;
-}
-
-.item-details {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Agar nama item bisa memanjang */
-  margin-right: 10px;
-}
-
-/* Nama Item - Dibuat lebih besar dan tebal */
-.item-name {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 3px;
-}
-
-.item-package {
-  font-size: 0.9rem;
-  color: #000000;
-}
-
-/* Harga Item - Dibuat sejajar kanan */
-.item-price {
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.judul-item-struk {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #333;
-  text-align: left; /* <-- Diubah menjadi rata kiri */
-  margin-top: 20px;
-  margin-bottom: 15px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #eee;
-}
-
-/* Total Harga - PALING MENONJOL (RATA KANAN) */
-#struk-content h4 {
-  font-size: 1.2rem;
-  font-weight: bolder;
-  text-align: left;
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 2px solid #333;
-}
-#struk-content h3 {
-  font-size: 1.2rem;
-  font-weight: bolder;
-  text-align: right;
-  margin-top: 20px;
-  padding-top: 10px;
-  border-top: 2px solid #333;
-}
-/* Footer Struk */
-#struk-content p:last-child {
-  margin-top: 15px;
-  font-style: italic;
-  color: #000000;
-}
+/* GANTI SEMUA BLOK @media print LAMA ANDA DENGAN INI */
+/* GANTI SEMUA BLOK @media print LAMA ANDA DENGAN INI */
 @media print {
-  /*
-  Aturan ini menyembunyikan semua elemen di luar
-  kontainer utama (`.page-container`)
-  yang tidak memiliki kelas `.struk-container`
-  */
-  .page-container:not(.struk-container) {
+  /* Sembunyikan semua elemen yang tidak perlu dicetak */
+  body > *:not(.struk-container) {
     display: none !important;
   }
 
-  /*
-  Pastikan kontainer struk yang terlihat
-  dan atur ukurannya agar sesuai kertas printer
-  */
-  .struk-container {
-    width: 100% !important;
-    max-width: 58mm !important; /* Sesuaikan dengan lebar kertas Anda */
-    margin: 0 auto !important; /* Atur di tengah */
-    padding: 10px !important;
+  /* Reset dasar yang agresif untuk print */
+  * {
+    font-family: "Courier New", Courier, monospace !important;
+    font-size: 8pt !important;
+    color: #000 !important;
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.3 !important;
+    font-weight: normal !important;
     box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body,
+  html {
+    width: 58mm !important;
+  }
+
+  .struk-container,
+  #struk-content {
+    width: 100% !important;
     border: none !important;
   }
 
-  /* Atur format teks di dalam struk */
-  body,
-  p,
-  h3,
-  h4,
-  strong {
-    font-family: "Courier New", Courier, monospace !important;
-    font-size: 10px !important;
-    line-height: 1.2 !important;
-    color: #000 !important;
-    font-weight: bold !important;
+  /* --- HEADER & INFO --- */
+  .struk-header,
+  .struk-info,
+  .struk-pelanggan {
+    margin-bottom: 8px !important;
   }
-
-  /* Atur semua elemen P menjadi rata kiri */
-  p {
-    margin: 2px 0 !important;
-  }
-
-  /* Atur judul struk */
-  h3 {
-    font-size: 14px !important;
+  .struk-header {
     text-align: center !important;
-    margin-bottom: 5px !important;
+    border-bottom: 1px dashed #000 !important;
+    padding-bottom: 5px !important;
+  }
+  .struk-info p {
+    margin-bottom: 2px !important;
   }
 
-  /* Sembunyikan elemen-elemen yang tidak perlu */
-  .struk-actions,
-  .bottom-nav,
-  .header-simple {
-    display: none !important;
+  /* PERMINTAAN ANDA: Nama Pelanggan dibuat BOLD dan BESAR */
+  .struk-pelanggan-nama {
+    font-size: 11pt !important;
+    font-weight: 700 !important; /* 700 adalah nilai untuk 'bold' */
+  }
+
+  /* --- DAFTAR ITEM --- */
+  .struk-items-list {
+    margin: 8px 0 !important;
+    padding: 8px 0 !important;
+    border-top: 1px dashed #000 !important;
+    border-bottom: 1px dashed #000 !important;
+  }
+
+  .struk-item {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 4px !important;
+    border-bottom: 1px dotted #555 !important;
+  }
+  .struk-item:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  .item-details {
+    margin-right: 5px !important;
+  }
+  .item-name {
+    font-size: 9pt !important;
+    font-weight: 700 !important; /* Bold */
+  }
+  .item-package {
+    font-size: 7pt !important;
+  }
+  .item-price {
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+
+  /* --- TOTAL & FOOTER --- */
+  .struk-total h3,
+  .struk-total {
+    font-size: 12pt !important;
+    font-weight: 700 !important; /* Bold */
+    text-align: right !important;
+    margin-top: 5px !important;
+  }
+  strong {
+    font-weight: 700 !important; /* Pastikan 'Lunas' juga bold */
+  }
+  .struk-catatan {
+    margin-top: 8px !important;
+    font-size: 7pt !important;
+    font-style: italic !important;
+  }
+  .struk-separator,
+  .struk-footer {
+    text-align: center !important;
+    margin-top: 10px !important;
   }
 }
+
 /* Styling untuk daftar item pesanan di form */
 .order-item {
   display: flex;
@@ -843,4 +797,117 @@ form button[type="submit"]:hover {
 /* Efek saat kursor mouse menyentuh tombol */
 .btn-remove:hover {
   background-color: #c0392b; /* Warna merah lebih gelap */
+}
+
+/* ======================================= */
+/* STYLE UNTUK AREA OPSI MEMBER            */
+/* ======================================= */
+
+/* Wadah utama untuk area member di bawah */
+#member-actions-container {
+  margin-top: 20px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: #f0f8ff; /* Warna biru muda yang lembut */
+  border-radius: 8px;
+  border: 1px solid #cce4ff;
+  display: none; /* Defaultnya tersembunyi */
+}
+
+/* Judul kecil untuk area member */
+#member-actions-container h5 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #0056b3;
+  font-weight: 600;
+  border-bottom: 1px solid #cce4ff;
+  padding-bottom: 8px;
+}
+
+/* Kontainer untuk info poin dan tombol tukar */
+#member-actions-container .member-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* Mengatur ulang style badge di dalam container baru */
+#member-actions-container .badge {
+  margin: 0;
+}
+
+/* Tombol tukar poin */
+.btn-tukar-poin {
+  padding: 6px 12px;
+  background-color: #28a745; /* Warna hijau */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background-color 0.2s;
+}
+
+.btn-tukar-poin:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.btn-tukar-poin:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+/* Penataan untuk checkbox totebag */
+#member-actions-container .form-group-checkbox {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px dashed #cce4ff;
+}
+
+/* ======================================= */
+/* STYLE UNTUK KARTU KANBAN & DEADLINE     */
+/* ======================================= */
+
+/* Memberi sedikit border merah pada kartu yang mepet deadline */
+.kanban-card.mepet {
+  border-left: 5px solid #e74c3c; /* Warna merah bata */
+}
+
+/* Header kartu (Nama & Ikon Deadline) */
+.kanban-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.kanban-card .card-header h4 {
+  margin: 0;
+}
+
+/* Ikon & Teks Peringatan Deadline */
+.deadline-warning {
+  background-color: #f39c12; /* Warna oranye */
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+/* Detail item (label paket) */
+.card-details {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px; /* Memberi jarak antar label */
+}
+
+.paket-label {
+  background-color: #e9ecef;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  color: #495057;
 }
