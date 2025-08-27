@@ -10,6 +10,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="logo.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
   </head>
   <body>
     <div id="loading-spinner" class="hidden">
@@ -20,36 +24,42 @@
 
     <nav class="bottom-nav">
       <button id="nav-dashboard" class="nav-button active">
-        <img
-          src="https://icongr.am/feather/home.svg?size=24&color=ffffff"
-          alt="Dashboard"
-        /><span>Dashboard</span>
+        <i class="fa-solid fa-house"></i>
+        <span>Dashboard</span>
       </button>
       <button id="nav-proses" class="nav-button">
-        <img
-          src="https://icongr.am/feather/truck.svg?size=24&color=ffffff"
-          alt="Proses"
-        /><span>Proses</span>
+        <i class="fa-solid fa-truck-fast"></i>
+        <span>Proses</span>
       </button>
       <button id="nav-tambah" class="nav-button add">
-        <img
-          src="https://icongr.am/feather/plus.svg?size=32&color=ffffff"
-          alt="Tambah"
-        />
+        <i class="fa-solid fa-plus"></i>
       </button>
       <button id="nav-riwayat" class="nav-button">
-        <img
-          src="https://icongr.am/feather/archive.svg?size=24&color=ffffff"
-          alt="Riwayat"
-        /><span>Riwayat</span>
+        <i class="fa-solid fa-receipt"></i>
+        <span>Riwayat</span>
       </button>
       <button id="nav-pelanggan" class="nav-button">
-        <img
-          src="https://icongr.am/feather/users.svg?size=24&color=ffffff"
-          alt="Pelanggan"
-        /><span>Pelanggan</span>
+        <i class="fa-solid fa-users"></i>
+        <span>Pelanggan</span>
       </button>
     </nav>
+
+    <div id="modal-overlay" class="hidden">
+      <div id="modal-box">
+        <h3 id="modal-title">Judul Modal</h3>
+        <p id="modal-message">Pesan akan muncul di sini.</p>
+        <input
+          type="number"
+          id="modal-input"
+          class="hidden"
+          placeholder="Masukkan angka..."
+        />
+        <div class="modal-buttons">
+          <button id="modal-cancel" class="btn-secondary">Batal</button>
+          <button id="modal-confirm" class="btn-primary">Konfirmasi</button>
+        </div>
+      </div>
+    </div>
 
     <script src="script.js"></script>
   </body>

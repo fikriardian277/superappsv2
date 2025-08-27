@@ -1,22 +1,14 @@
-html,
-body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    sans-serif;
-  background-color: var(--bg-color);
-  color: var(--font-color);
-  margin: 0;
-  /* Kunci utamanya ada di sini */
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh; /* Setidaknya setinggi layar */
-}
-#app-container {
-  min-height: 100%; /* Memastikan container minimal setinggi layar */
-}
+/* ======================================= */
+/* FONDASI & SISTEM DESAIN FINAL           */
+/* ======================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 :root {
+  /* Warna Cerah & Profesional */
   --primary-color: #007bff;
   --primary-dark: #0056b3;
-  --bg-color: #f8f9fa;
+  --bg-color: #f8f9fa; /* Latar belakang putih gading */
   --card-bg: #ffffff;
   --font-color: #212529;
   --font-color-light: #6c757d;
@@ -24,9 +16,21 @@ body {
   --red-color: #dc3545;
   --border-color: #dee2e6;
   --shadow-color: rgba(0, 0, 0, 0.08);
-}
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+  /* Tipografi Elegan */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px; /* Judul section dikecilkan sedikit */
+  --font-size-xl: 22px;
+  --font-size-title: 24px; /* Judul halaman */
+
+  /* Jarak & Radius */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --border-radius: 10px; /* Sudut sedikit lebih tegas */
+}
 
 * {
   box-sizing: border-box;
@@ -34,101 +38,287 @@ body {
 }
 
 body {
-  font-family: "Inter", sans-serif;
+  font-family: "Inter", -apple-system, sans-serif;
   background-color: var(--bg-color);
   color: var(--font-color);
   margin: 0;
-  padding-bottom: 70px;
-  font-size: 16px;
+  padding-bottom: 85px;
+  font-size: var(--font-size-md);
+  line-height: 1.6; /* Sedikit lebih lega untuk keterbacaan */
 }
 
-/* Navigasi Bawah */
+/* Aturan Font Weight yang Baru */
+h1,
+h2,
+h3,
+h4,
+.section-title,
+strong {
+  font-weight: 600; /* SemiBold: Tegas tapi tidak terlalu tebal */
+}
+
+label,
+.btn-primary,
+.btn-secondary {
+  font-weight: 500; /* Medium: Bobot standar untuk interaksi */
+}
+
+/* --- Navigasi Bawah --- */
 .bottom-nav {
-  /* ... (tidak ada perubahan pada kode ini) */
   position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 65px;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--primary-dark)
-  );
+  background: var(--card-bg);
   display: flex;
   justify-content: space-around;
-  align-items: center;
-  box-shadow: 0 -4px 15px var(--shadow-color);
+  align-items: center; /* Vertikal di tengah */
+  box-shadow: 0 -2px 10px var(--shadow-color);
   z-index: 1000;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  border-top: 1px solid var(--border-color);
 }
 
 .nav-button {
   background: none;
   border: none;
-  color: white;
+  color: var(--font-color-light);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  font-size: 10px;
-  opacity: 0.7;
+  justify-content: center; /* Tengahkan konten */
+  gap: 4px;
+  font-size: var(--font-size-xs);
   cursor: pointer;
-  /* Diubah menjadi 20% agar presisi untuk 5 tombol */
+  height: 100%; /* Penuhi tinggi container */
   flex-basis: 20%;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .nav-button.active {
-  opacity: 1;
+  color: var(--primary-color);
   font-weight: 600;
-  transform: translateY(-2px);
 }
 
+/* KUNCI PERBAIKAN: Tombol Add (+) */
 .nav-button.add {
-  /* ========================================================= */
-  /* PERBAIKAN: Gunakan flexbox, bukan position: absolute */
-  /* ========================================================= */
-  position: relative; /* Diperlukan untuk box-shadow agar tidak terpotong */
-  width: 60px;
-  height: 60px;
-  border-radius: 30%;
-  background: white;
-  box-shadow: 0 5px 15px rgba(0, 86, 179, 0.4);
-  color: var(--primary-color);
+  /* KUNCI PERBAIKAN: Paksa ukuran agar tidak bisa diganggu */
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px; /* Pengaman tambahan untuk flexbox */
+  border-radius: 50% !important; /* Paksa jadi lingkaran */
+
+  /* Properti lain untuk menengahkan & styling */
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  flex-shrink: 0;
+  gap: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  transform: translateY(-20px);
+}
+
+/* Pastikan ikon di dalam tombol + juga di-style dengan benar */
+.nav-button.add i {
+  color: white;
+  font-size: 24px; /* Ukuran ikon di dalamnya */
+  line-height: 1; /* Penting untuk penengahan vertikal */
+}
+
+/* Dan pastikan tombol add tetap terangkat meski aktif */
+.nav-button.add.active {
+  transform: translateY(-20px);
+}
+
+/* KUNCI PERBAIKAN: Ikon di dalam tombol */
+.nav-button i {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.nav-button.add i {
+  font-size: 24px;
+  color: white;
+}
+/* ======================================= */
+/* KOMPONEN UTAMA (NAVIGASI & MODAL)       */
+/* ======================================= */
+
+/* --- Navigasi Bawah --- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 65px;
+  background: var(--card-bg);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 10px var(--shadow-color);
+  z-index: 1000;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Aturan umum untuk 4 tombol biasa */
+.nav-button {
+  background: none;
+  border: none;
+  color: var(--font-color-light);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  height: 100%;
+  flex-basis: 20%; /* Biarkan 4 tombol lain mengambil sisa ruang */
+  transition: all 0.2s ease;
+}
+
+.nav-button.active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* Aturan KHUSUS dan FINAL untuk tombol Add (+) */
+.nav-button.add {
+  /* KUNCI #1: Reset aturan flex agar tidak ikut-ikutan */
+  flex-basis: auto; /* Jangan paksa 20% */
+  flex-grow: 0;
   flex-shrink: 0;
 
-  /* Tambahkan margin negatif untuk efek 'terangkat' */
-  margin-bottom: 25px;
-  transform: translateY(-12px); /* Trik untuk menaikkan tombol */
-}
-.nav-button.add img {
-  filter: invert(41%) sepia(98%) saturate(1353%) hue-rotate(189deg)
-    brightness(94%) contrast(101%);
-}
-.nav-button.add img {
-  filter: invert(41%) sepia(98%) saturate(1353%) hue-rotate(189deg)
-    brightness(94%) contrast(101%);
+  /* KUNCI #2: Paksa ukuran dengan !important */
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important; /* Paksa jadi lingkaran */
+
+  /* Aturan lain untuk styling */
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+  transform: translateY(-20px);
 }
 
-/* Layout & Header */
-/* Layout & Header */
-.page-container {
-  padding: 20px;
+.nav-button i {
+  font-size: 22px;
+  line-height: 1;
 }
+
+.nav-button.add i {
+  font-size: 24px;
+  color: white;
+}
+
+/* --- Modal Kustom --- */
+#modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+#modal-overlay:not(.hidden) {
+  opacity: 1;
+  pointer-events: all;
+}
+
+#modal-box {
+  background: var(--card-bg);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 25px var(--shadow-color);
+  width: 90%;
+  max-width: 350px;
+  text-align: center;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+
+#modal-overlay:not(.hidden) #modal-box {
+  transform: scale(1);
+}
+
+#modal-title {
+  margin-top: 0;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  color: var(--font-color);
+}
+
+#modal-message {
+  margin-bottom: var(--spacing-lg);
+  color: var(--font-color-light);
+  line-height: 1.5;
+}
+
+#modal-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--spacing-sm);
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+.modal-buttons button {
+  flex-grow: 1;
+}
+
+/* KELAS PENTING UNTUK MENYEMBUNYIKAN ELEMEN */
+.hidden {
+  display: none !important;
+}
+
+/* ======================================= */
+/* HALAMAN DASHBOARD (RE-DESIGN)           */
+/* ======================================= */
+
+/* Header Halaman (berlaku umum) */
+/* --- Header Halaman (berlaku umum) --- */
 header {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Untuk header dengan logo */
-  margin-bottom: 25px;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--border-color);
 }
+
+/* Header di Dashboard (dengan logo) */
+header:not(.header-simple) {
+  justify-content: space-between;
+}
+
+/* Header di halaman lain (tanpa logo) */
 header.header-simple {
-  justify-content: center; /* Untuk header tanpa logo */
+  justify-content: center; /* Teks di tengah */
+  text-align: center;
 }
+
 header .logo {
   width: 45px;
   height: 45px;
@@ -136,394 +326,506 @@ header .logo {
 }
 
 header h1 {
-  margin: 0.5rem 0;
-  font-size: 20px;
-  font-weight: 700;
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: 600; /* Dibuat sedikit lebih ringan dari 700 */
+}
+.page-container {
+  padding: var(--spacing-md);
 }
 
-/* Dashboard */
+/* Kontainer untuk Grafik Chart.js */
+.chart-container {
+  background-color: var(--card-bg);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Grid untuk kartu rangkuman */
 .summary-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 15px;
+  gap: var(--spacing-md);
 }
+
+/* Kartu Rangkuman Individual */
 .summary-card {
   background-color: var(--card-bg);
-  padding: 20px;
-  border-radius: 16px;
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
   border: 1px solid var(--border-color);
-  box-shadow: 0 5px 20px var(--shadow-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
+
 .summary-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px var(--shadow-color);
+  box-shadow: 0 6px 16px var(--shadow-color);
 }
+
+/* Judul Kartu (misal: "Order Aktif") */
 .summary-card h3 {
-  margin: 0 0 8px 0;
-  font-size: 14px;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-sm);
   color: var(--font-color-light);
   font-weight: 500;
 }
+
+/* Angka di dalam Kartu */
 .summary-card p {
   margin: 0;
-  font-size: 24px;
+  font-size: var(--font-size-xl);
   font-weight: 700;
-  color: var(--primary-dark);
+  color: var(--font-color);
 }
 
-/* Form Kasir */
-/* === STYLING FORM KASIR BARU (FOKUS KEJELASAN) === */
+/* ======================================= */
+/* HALAMAN FORMULIR KASIR (RE-DESIGN)      */
+/* ======================================= */
 
-.form-container {
-  padding-top: 0;
+#laundryForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.form-group.full-width,
+.section-title.full-width,
+.actions-grid.full-width,
+.order-list-container.full-width,
+.total-container.full-width,
+.form-grid-akhir.full-width,
+#member-actions-container.full-width,
+.btn-primary.full-width {
+  grid-column: 1 / -1;
 }
 
 .form-group {
-  margin-bottom: 24px; /* Beri jarak lebih antar field */
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Label dibuat lebih informatif */
 .form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600; /* Sedikit lebih tebal */
-  font-size: 1rem;
-  color: #333;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--font-color);
 }
-
-/* Penanda Wajib Isi (*) */
 .form-group label.required::after {
   content: " *";
   color: var(--red-color);
-  font-weight: bold;
 }
 
-/* Styling Input dan Select */
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
   width: 100%;
-  padding: 14px;
+  padding: 12px var(--spacing-md);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 1rem;
+  border-radius: var(--spacing-sm);
+  font-size: var(--font-size-md);
   font-family: "Inter", sans-serif;
-  background-color: #fff;
+  background-color: var(--card-bg);
   transition: all 0.2s ease;
 }
-
-/* Teks bantuan (placeholder) agar lebih terbaca */
-.form-group input::placeholder {
-  color: #999;
-  opacity: 1;
+.form-group textarea {
+  resize: vertical;
 }
 
-/* Styling saat input/select di-klik (focus) */
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-  background-color: #f8f9fa;
-}
-
-/* Styling untuk input/select yang NONAKTIF (disabled) */
-.form-group input:disabled,
-.form-group select:disabled {
-  background-color: #e9ecef;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-/* Styling untuk info harga */
-#info-harga {
-  font-size: 1.2rem;
-  font-weight: 600;
-  text-align: center;
-  padding: 15px;
-  margin: 20px 0;
-  background-color: #e6f7ff;
-  color: var(--primary-dark);
-  border-radius: 10px;
-  border: 1px dashed var(--primary-color);
-}
-
-/* === Perbedaan Tombol Primer & Sekunder === */
-
-/* Tombol Aksi Utama (Simpan & Cetak) */
-form button[type="submit"] {
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: white;
-  background: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--primary-dark)
-  );
-  transition: transform 0.1s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
-}
-form button[type="submit"]:hover {
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
-}
-
-/* Tombol Aksi Sampingan (Tambah Item) */
-.btn-secondary {
-  width: 100%;
-  padding: 14px; /* Sedikit lebih kecil */
-  border: 1px solid var(--primary-color);
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--primary-color);
-  background-color: #fff;
-  transition: all 0.2s ease;
-}
-.btn-secondary:hover {
-  background-color: #e6f7ff;
-  color: var(--primary-dark);
-}
-/* Styling untuk Grand Total agar di kanan dan menonjol */
-.total-container {
-  text-align: right; /* Pindahkan semua teks di dalamnya ke kanan */
-  margin-top: 20px; /* Jarak dari daftar item di atasnya */
-  padding-top: 15px; /* Jarak dari garis batas atas */
-  border-top: 2px solid #e9ecef; /* Garis pemisah di atas total */
-  font-size: 1.2rem; /* Ukuran font lebih besar */
-
-  color: var(--primary-dark); /* Warna teks agar konsisten */
-}
-
-/* Styling saat terjadi error */
-.error-message {
-  color: var(--red-color);
-  font-size: 0.8rem;
-  margin-top: 6px;
-}
-.form-group input.is-invalid {
-  border-color: var(--red-color);
-  background-color: #fff8f8;
-}
-.form-group input.is-invalid:focus {
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
-}
-
-/* === Pemisah Antar Bagian Form === */
-.section-divider {
-  border: none;
-  height: 1px;
-  background-color: #e0e0e0;
-  margin: 30px 0 20px 0;
 }
 
 .section-title {
-  font-size: 1.1rem;
+  font-size: var(--font-size-lg);
   font-weight: 600;
-  color: var(--primary-dark);
-  margin-bottom: 20px;
-}
-/* Styling untuk bagian catatan di struk */
-/* Styling catatan struk agar sejajar (hemat ruang) */
-.struk-catatan {
-  display: flex; /* Membuat elemen di dalamnya sejajar */
-  align-items: baseline; /* Menyejajarkan teks berdasarkan garis bawahnya */
-  text-align: left;
-  margin: 10px 0;
-  font-size: 0.9rem; /* Ukuran font bisa diatur di sini */
+  margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
 }
 
-/* Menghapus margin bawaan dari paragraf */
-.struk-catatan p {
-  margin: 0;
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--spacing-md);
+  align-items: center;
+  margin: var(--spacing-sm) 0 var(--spacing-md) 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: #eef1f4;
+  border-radius: var(--border-radius);
 }
 
-/* Memberi sedikit jarak setelah tulisan "Catatan:" */
-.struk-catatan p strong {
-  margin-right: 5px;
+#info-harga {
+  font-weight: 500;
+  color: var(--font-color-light);
+  font-size: var(--font-size-sm);
 }
-/* Kanban Board */
-.kanban-main {
-  padding: 0; /* Hapus padding dari main agar container bisa full-width */
+#info-harga span {
+  display: block;
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  color: var(--font-color);
 }
+
+.btn-primary,
+.btn-secondary {
+  padding: 12px var(--spacing-md);
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-primary {
+  color: white;
+  background-color: var(--primary-color);
+}
+.btn-secondary {
+  color: var(--primary-color);
+  background-color: var(--card-bg);
+}
+
+.total-container {
+  text-align: right;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.form-grid-akhir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  align-items: stretch; /* 1. Paksa kedua 'kotak' jadi sama tinggi */
+}
+
+/* Pastikan .form-group di dalamnya siap untuk meregang */
+.form-grid-akhir .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 2. KUNCI UTAMA: Paksa input DI DALAM kotak untuk ikut meregang */
+.form-grid-akhir .form-group textarea,
+.form-grid-akhir .form-group select {
+  height: 100%;
+}
+/* ======================================= */
+/* HALAMAN KANBAN (RE-DESIGN)              */
+/* ======================================= */
+
+/* Kontainer utama yang bisa di-scroll */
 .kanban-container {
   display: flex;
-  overflow-x: auto; /* Memungkinkan scroll/slide horizontal */
-  gap: 15px;
-  padding: 0 20px 20px 20px; /* Padding untuk jarak kanan-kiri */
-
-  /* ======================================= */
-  /* INI KUNCI UTAMANYA: CSS SCROLL SNAP     */
-  /* ======================================= */
+  overflow-x: auto;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-md) var(--spacing-md)
+    var(--spacing-md);
   scroll-snap-type: x mandatory;
-
-  /* Trik sulap menyembunyikan scrollbar */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Menyembunyikan scrollbar */
+  -ms-overflow-style: none;
 }
 .kanban-container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
 
+/* Kolom (Diterima, Proses, Siap Diambil) */
 .kanban-column {
-  flex: 0 0 90%;
+  flex: 0 0 90%; /* Lebar kolom di mobile */
   max-width: 340px;
-  background-color: var(--card-bg); /* Beri warna dasar putih */
-  border-radius: 16px;
+  background-color: transparent; /* Kolom dibuat transparan */
+  border-radius: var(--border-radius);
   scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  /* INI PEMISAHNYA: Shadow halus di sekeliling kolom */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
-  border: 1px solid var(--border-color);
+  border: none; /* Hapus border lama */
+  box-shadow: none; /* Hapus shadow lama */
 }
+
+/* Header Kolom */
 .kanban-header {
-  padding: 15px; /* Padding lebih rapi */
-  font-size: 16px;
-  font-weight: 600;
+  padding: 0 0 var(--spacing-md) 0;
+  border-bottom: 2px solid var(--border-color);
+  margin-bottom: var(--spacing-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--border-color); /* Garis bawah header */
 }
 .kanban-header h2 {
-  font-size: 18px;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
   margin: 0;
-  display: flex; /* Agar judul dan counter bisa sejajar */
-  align-items: center;
-  gap: 8px; /* Jarak antara judul dan counter */
 }
 .card-count {
-  background-color: var(--card-bg);
-  color: var(--font-color);
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: var(--font-size-xs);
   font-weight: 600;
-  border: 1px solid var(--border-color);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 20px; /* Bentuk pil */
+  min-width: 24px;
+  text-align: center;
 }
+
+/* Kontainer untuk kartu-kartu */
 .kanban-cards {
   overflow-y: auto;
-  padding: 2px;
+  padding-right: var(
+    --spacing-sm
+  ); /* Jarak kecil untuk scrollbar jika muncul */
 }
+
+/* Kartu Order (Bagian Paling Penting) */
 .kanban-card {
   background-color: var(--card-bg);
-  border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
   border: 1px solid var(--border-color);
-  box-shadow: 0 5px 15px var(--shadow-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  transition: transform 0.2s ease;
 }
-.kanban-card h4 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
+.kanban-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Kartu dengan notif deadline */
+.kanban-card.mepet {
+  border-left: 4px solid var(--red-color);
+}
+
+.kanban-card .card-header {
+  border-bottom: none; /* Hapus style header lama */
+  padding: 0;
+  margin-bottom: var(--spacing-xs);
+}
+.kanban-card .card-header h4 {
+  font-size: var(--font-size-md);
   font-weight: 600;
+  margin: 0;
 }
 .kanban-card p {
-  margin: 0 0 12px 0;
-  font-size: 12px;
+  /* Untuk ID Transaksi */
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: var(--font-size-xs);
   color: var(--font-color-light);
 }
+
+/* Detail item (label paket) */
+.card-details {
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+.paket-label {
+  background-color: var(--bg-color);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+}
+
+/* Peringatan Deadline */
+.deadline-warning {
+  background-color: var(--red-color);
+  color: white;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* Footer Kartu (Status Bayar & Dropdown) */
 .card-footer {
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  margin-top: var(--spacing-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .payment-status {
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: 20px;
   font-size: 10px;
   font-weight: 600;
   color: white;
-}
-.payment-status.lunas {
-  background-color: var(--green-color);
-}
-.payment-status.belum-lunas {
-  background-color: var(--red-color);
 }
 .status-select {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px 10px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   background-color: var(--bg-color);
-  font-family: "Inter", sans-serif;
 }
-/* Halaman Struk */
+
+/* ======================================= */
+/* HALAMAN RIWAYAT & PELANGGAN (RE-DESIGN) */
+/* ======================================= */
+
+/* Kolom Pencarian */
+.search-container input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-md);
+  font-family: "Inter", sans-serif;
+  margin-bottom: var(--spacing-lg);
+  background-color: var(--card-bg);
+}
+.search-container input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Daftar (list) */
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md); /* Jarak antar kartu */
+}
+
+/* Kartu Item Individual */
+.history-item {
+  background-color: var(--card-bg);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.history-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px var(--shadow-color);
+}
+
+/* Bagian atas kartu (Nama & ID) */
+.history-item-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+.history-item-name {
+  font-weight: 600;
+  font-size: var(--font-size-md);
+  color: var(--font-color);
+}
+.history-item-id {
+  font-size: var(--font-size-xs);
+  color: var(--font-color-light);
+  white-space: nowrap;
+  margin-left: var(--spacing-md);
+}
+
+/* Bagian bawah kartu (Detail: Tanggal, Status, Total) */
+.history-item-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-sm);
+}
+.history-item-date {
+  color: var(--font-color-light);
+}
+.history-item-total {
+  font-weight: 700;
+  color: var(--font-color);
+}
+
+/* ======================================= */
+/* KOMPONEN PENDUKUNG & UTILITAS           */
+/* ======================================= */
+
+/* --- Halaman Struk (Tampilan Layar) --- */
 .struk-container main {
   padding-top: 0;
 }
 #struk-content {
-  border: 1px dashed #333;
-  padding: 15px;
-  margin-bottom: 20px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
   font-family: "Courier New", Courier, monospace;
-  background-color: #fff;
+}
+.struk-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
 }
 .struk-actions button {
   width: 100%;
-  padding: 15px;
+  padding: 14px;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-md);
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 10px;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 #tombol-cetak {
   background-color: var(--primary-color);
-  color: white;
 }
 #tombol-wa {
   background-color: var(--green-color);
-  color: white;
 }
 #tombol-kembali {
-  background-color: #7f8c8d;
-  color: white;
+  background-color: var(--font-color-light);
 }
-/* ========================================================== */
-/* STYLE UNTUK ANIMASI LOADING                                */
-/* ========================================================== */
-/* CSS untuk spinner sederhana */
+
+/* --- Animasi Loading --- */
 #loading-spinner {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
-  display: flex; /* Menggunakan flexbox untuk memusatkan konten */
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
 }
-
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border-left-color: #007bff;
+  border-left-color: var(--primary-color);
   animation: spin 1s ease infinite;
 }
-
-/* KELAS INI SANGAT PENTING */
-.hidden {
-  display: none !important;
-}
-
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
@@ -541,373 +843,266 @@ form button[type="submit"]:hover {
   animation: spin 0.8s linear infinite;
 }
 
-.chart-container {
-  background-color: var(--card-bg);
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 5px 20px var(--shadow-color);
-  margin-bottom: 20px;
-}
+/* ======================================= */
+/* KOMPONEN KECIL & UTILITAS (FINAL)       */
+/* ======================================= */
 
-/* ========================================================== */
-/* STYLE UNTUK HALAMAN RIWAYAT                                */
-/* ========================================================== */
-.search-container input {
-  width: 100%;
-  padding: 14px;
-  border: 1px solid var(--border-color);
-  border-radius: 10px;
-  font-size: 16px;
-  font-family: "Inter", sans-serif;
-  margin-bottom: 20px;
-}
-.history-list {
-  list-style: none;
+/* --- Daftar Item Pesanan di Form Kasir --- */
+.order-list-container {
   padding: 0;
-  margin: 0;
-}
-.history-item {
-  background-color: var(--card-bg);
-  padding: 15px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 5px 15px var(--shadow-color);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.history-item:active {
-  transform: scale(0.98);
-}
-.history-item-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.history-item-name {
-  font-weight: 600;
-  font-size: 16px;
-}
-.history-item-id {
-  font-size: 12px;
-  color: var(--font-color-light);
-}
-.history-item-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-}
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 600;
-  color: white;
-}
-.status-badge.status-diterima {
-  background-color: #3498db;
-}
-.status-badge.status-proses-cuci {
-  background-color: #f1c40f;
-  color: #333;
-}
-.status-badge.status-siap-diambil {
-  background-color: var(--green-color);
-}
-.status-badge.status-selesai {
-  background-color: var(--font-color-light);
+  margin: 0 0 var(--spacing-md) 0;
+  list-style: none;
 }
 
-/* === STYLE STRUK LEBIH ESTETIK & MENONJOL === */
-
-/* ======================================= */
-/* STYLE STRUK 58MM (UNTUK TAMPILAN PRINT) */
-/* ======================================= */
-
-/* GANTI SEMUA BLOK @media print LAMA ANDA DENGAN INI */
-/* GANTI SEMUA BLOK @media print LAMA ANDA DENGAN INI */
-@media print {
-  /* Sembunyikan semua elemen yang tidak perlu dicetak */
-  body > *:not(.struk-container) {
-    display: none !important;
-  }
-
-  /* Reset dasar yang agresif untuk print */
-  * {
-    font-family: "Courier New", Courier, monospace !important;
-    font-size: 8pt !important;
-    color: #000 !important;
-    background: transparent !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.3 !important;
-    font-weight: normal !important;
-    box-shadow: none !important;
-    text-shadow: none !important;
-  }
-
-  body,
-  html {
-    width: 58mm !important;
-  }
-
-  .struk-container,
-  #struk-content {
-    width: 100% !important;
-    border: none !important;
-  }
-
-  /* --- HEADER & INFO --- */
-  .struk-header,
-  .struk-info,
-  .struk-pelanggan {
-    margin-bottom: 8px !important;
-  }
-  .struk-header {
-    text-align: center !important;
-    border-bottom: 1px dashed #000 !important;
-    padding-bottom: 5px !important;
-  }
-  .struk-info p {
-    margin-bottom: 2px !important;
-  }
-
-  /* PERMINTAAN ANDA: Nama Pelanggan dibuat BOLD dan BESAR */
-  .struk-pelanggan-nama {
-    font-size: 11pt !important;
-    font-weight: 700 !important; /* 700 adalah nilai untuk 'bold' */
-  }
-
-  /* --- DAFTAR ITEM --- */
-  .struk-items-list {
-    margin: 8px 0 !important;
-    padding: 8px 0 !important;
-    border-top: 1px dashed #000 !important;
-    border-bottom: 1px dashed #000 !important;
-  }
-
-  .struk-item {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: flex-start !important;
-    padding-bottom: 4px !important;
-    margin-bottom: 4px !important;
-    border-bottom: 1px dotted #555 !important;
-  }
-  .struk-item:last-child {
-    border-bottom: none !important;
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-  }
-
-  .item-details {
-    margin-right: 5px !important;
-  }
-  .item-name {
-    font-size: 9pt !important;
-    font-weight: 700 !important; /* Bold */
-  }
-  .item-package {
-    font-size: 7pt !important;
-  }
-  .item-price {
-    text-align: right !important;
-    white-space: nowrap !important;
-  }
-
-  /* --- TOTAL & FOOTER --- */
-  .struk-total h3,
-  .struk-total {
-    font-size: 12pt !important;
-    font-weight: 700 !important; /* Bold */
-    text-align: right !important;
-    margin-top: 5px !important;
-  }
-  strong {
-    font-weight: 700 !important; /* Pastikan 'Lunas' juga bold */
-  }
-  .struk-catatan {
-    margin-top: 8px !important;
-    font-size: 7pt !important;
-    font-style: italic !important;
-  }
-  .struk-separator,
-  .struk-footer {
-    text-align: center !important;
-    margin-top: 10px !important;
-  }
-}
-
-/* Styling untuk daftar item pesanan di form */
 .order-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 10px; /* Jarak antar elemen */
-  padding: 8px 0; /* Sedikit jarak atas-bawah */
-  border-bottom: 1px solid #eee; /* Garis pemisah tipis */
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.order-item:last-child {
+  border-bottom: none;
 }
 
-/* Target elemen span pertama (nama item) di dalam .order-item */
-.order-item span:first-child {
-  flex-grow: 1; /* Membuat elemen ini memanjang memenuhi sisa ruang */
-  text-align: left; /* Memastikan teks rata kiri */
-  margin-right: 10px; /* Jarak ke elemen harga */
+.order-item .item-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+.order-item .item-info .item-name {
+  font-weight: 500;
+  color: var(--font-color);
+  font-size: var(--font-size-sm);
+}
+.order-item .item-info .item-details {
+  font-size: var(--font-size-xs);
+  color: var(--font-color-light);
 }
 
-/* Target elemen span kedua (harga) */
-.order-item span:nth-child(2) {
-  white-space: nowrap; /* Mencegah harga terpotong ke baris baru */
+.order-item .item-price {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--font-color);
+  white-space: nowrap; /* Mencegah harga turun */
 }
 
-/* Styling untuk tombol hapus (×) yang lebih presisi */
+/* --- Style untuk item diskon --- */
+.order-item.is-discount .item-name,
+.order-item.is-discount .item-price {
+  color: var(--green-color);
+}
+
+/* --- Tombol Hapus (X) --- */
 .btn-remove {
-  /* Ukuran presisi untuk lingkaran sempurna */
-  width: 26px;
-  height: 26px;
-
-  /* Hapus padding & border agar tidak mengganggu ukuran */
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border: none;
-  border-radius: 50%; /* Membuat jadi lingkaran */
-
-  /* Warna */
-  background-color: #e74c3c; /* Warna merah */
-  color: white; /* Warna icon × jadi putih */
-
-  /* Posisikan icon × di tengah lingkaran dengan flexbox */
+  border-radius: 50%;
+  flex-shrink: 0;
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--font-color-light);
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Tampilan icon × */
-  font-size: 20px;
-  font-weight: bold;
-  line-height: 1; /* Menghapus spasi ekstra dari baris */
-
-  /* Efek Interaktif */
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 1;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  flex-shrink: 0; /* Mencegah tombol menyusut */
+  transition: all 0.2s ease;
+  margin-left: var(--spacing-sm);
 }
-
-/* Efek saat kursor mouse menyentuh tombol */
 .btn-remove:hover {
-  background-color: #c0392b; /* Warna merah lebih gelap */
+  background-color: var(--red-color);
+  border-color: var(--red-color);
+  color: white;
+  transform: scale(1.1);
 }
 
-/* ======================================= */
-/* STYLE UNTUK AREA OPSI MEMBER            */
-/* ======================================= */
+/* --- Tata Letak Akhir Form (Catatan & Status) --- */
+.form-grid-akhir {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  align-items: end;
+}
+.form-grid-akhir .form-group label {
+  margin-bottom: var(--spacing-sm);
+}
 
-/* Wadah utama untuk area member di bawah */
+/* --- Style Opsi Member --- */
 #member-actions-container {
-  margin-top: 20px;
-  margin-bottom: 25px;
-  padding: 15px;
-  background-color: #f0f8ff; /* Warna biru muda yang lembut */
-  border-radius: 8px;
-  border: 1px solid #cce4ff;
-  display: none; /* Defaultnya tersembunyi */
+  grid-column: 1 / -1; /* Pastikan selalu full-width */
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+
+  /* Ubah jadi style kartu */
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  padding: var(--spacing-md);
+  display: none; /* Default tetap tersembunyi */
 }
 
-/* Judul kecil untuk area member */
 #member-actions-container h5 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #0056b3;
+  margin: 0 0 var(--spacing-md) 0;
+  padding-bottom: var(--spacing-sm);
+  color: var(--font-color);
+  font-size: var(--font-size-md);
   font-weight: 600;
-  border-bottom: 1px solid #cce4ff;
-  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
-/* Kontainer untuk info poin dan tombol tukar */
 #member-actions-container .member-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  gap: var(--spacing-md);
 }
 
-/* Mengatur ulang style badge di dalam container baru */
-#member-actions-container .badge {
-  margin: 0;
-}
-
-/* Tombol tukar poin */
-.btn-tukar-poin {
-  padding: 6px 12px;
-  background-color: #28a745; /* Warna hijau */
-  color: white;
-  border: none;
-  border-radius: 5px;
+/* Tombol Daftar Member & Tukar Poin */
+#member-actions-container .btn-register,
+#member-actions-container .btn-tukar-poin {
+  padding: 8px 14px;
+  border: 1px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
   cursor: pointer;
-  font-size: 0.9em;
-  transition: background-color 0.2s;
+  color: var(--primary-color);
+  background-color: var(--card-bg);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
-
-.btn-tukar-poin:disabled {
-  background-color: #aaa;
+#member-actions-container .btn-register:hover,
+#member-actions-container .btn-tukar-poin:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  color: white;
+}
+#member-actions-container .btn-tukar-poin:disabled {
+  border-color: var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--font-color-light);
   cursor: not-allowed;
 }
 
-.btn-tukar-poin:hover:not(:disabled) {
-  background-color: #218838;
-}
-
-/* Penataan untuk checkbox totebag */
+/* Checkbox Totebag */
 #member-actions-container .form-group-checkbox {
-  margin-top: 15px;
-  padding-top: 10px;
-  border-top: 1px dashed #cce4ff;
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
 }
 
-/* ======================================= */
-/* STYLE UNTUK KARTU KANBAN & DEADLINE     */
-/* ======================================= */
-
-/* Memberi sedikit border merah pada kartu yang mepet deadline */
-.kanban-card.mepet {
-  border-left: 5px solid #e74c3c; /* Warna merah bata */
+/* ===== STRUK KWITANSI 58MM ===== */
+.struk-container {
+  width: 58mm; /* ukuran kertas thermal */
+  margin: 0 auto;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  color: #000;
+  background: #fff;
+  padding: 0;
 }
 
-/* Header kartu (Nama & Ikon Deadline) */
-.kanban-card .card-header {
+/* Info transaksi */
+.struk-info p {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
+  margin: 2px 0;
 }
 
-.kanban-card .card-header h4 {
+/* Garis pemisah */
+.struk-separator {
+  border-top: 1px solid #000;
+  margin: 4px 0;
+}
+.struk-separator-dotted {
+  border-top: 1px dotted #000;
+  margin: 4px 0;
+}
+
+/* List item */
+.struk-items-list {
+  margin: 4px 0;
+}
+.struk-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 0;
+}
+.struk-item .item-details {
+  display: flex;
+  flex-direction: column;
+}
+.struk-item .item-name {
+  font-weight: bold;
+}
+.struk-item .item-package {
+  font-size: 10px;
+  color: #333;
+}
+
+/* Total */
+.struk-total h3 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin: 4px 0;
+}
+.struk-bayar {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 0;
+}
+.struk-catatan p {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px 0;
+}
+
+/* Bagian Poin */
+.struk-poin-summary p {
+  display: flex;
+  justify-content: space-between;
+  margin: 1px 0;
+}
+.exp-info-struk {
+  font-size: 10px;
+  text-align: right;
   margin: 0;
 }
 
-/* Ikon & Teks Peringatan Deadline */
-.deadline-warning {
-  background-color: #f39c12; /* Warna oranye */
-  color: white;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.8em;
-  font-weight: bold;
+/* Footer */
+.struk-footer {
+  text-align: center;
+  margin-top: 6px;
+}
+.struk-footer p {
+  margin: 2px 0;
+  font-size: 11px;
 }
 
-/* Detail item (label paket) */
-.card-details {
-  margin: 10px 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px; /* Memberi jarak antar label */
-}
-
-.paket-label {
-  background-color: #e9ecef;
-  padding: 3px 8px;
-  border-radius: 10px;
-  font-size: 0.85em;
-  color: #495057;
+/* ===== Print Mode ===== */
+@media print {
+  body * {
+    visibility: hidden; /* sembunyikan semua */
+  }
+  .struk-container,
+  .struk-container * {
+    visibility: visible; /* hanya tampilkan struk */
+  }
+  .struk-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .struk-actions {
+    display: none !important; /* tombol tidak ikut print */
+  }
 }
