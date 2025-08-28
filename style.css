@@ -383,144 +383,358 @@ header h1 {
   color: var(--font-color);
 }
 
-/* ======================================= */
-/* HALAMAN FORMULIR KASIR (RE-DESIGN)      */
-/* ======================================= */
+/* ================================================================== */
+/* == STYLING FORM KASIR (PROFESSIONAL RE-STYLE)                 == */
+/* ================================================================== */
 
+/* --- 1. FONDASI & LAYOUT UTAMA --- */
 #laundryForm {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
+  grid-template-columns: 1fr; /* Kita buat 1 kolom saja, fieldset akan mengatur grup */
+  gap: var(--spacing-lg); /* Jarak antar fieldset */
 }
 
-.form-group.full-width,
-.section-title.full-width,
-.actions-grid.full-width,
-.order-list-container.full-width,
-.total-container.full-width,
-.form-grid-akhir.full-width,
-#member-actions-container.full-width,
-.btn-primary.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-group {
+/* --- 2. FIELDSET & LEGEND (Judul Grup) --- */
+/* Fieldset digunakan untuk mengelompokkan form, lebih rapi & semantik */
+fieldset {
+  border: none;
+  padding: 0;
   margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Kolom default di dalam fieldset */
+  gap: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-lg);
+}
+
+/* Fieldset pertama tidak perlu garis atas */
+#laundryForm fieldset:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* Judul setiap grup form */
+legend {
+  padding: 0 var(--spacing-sm) 0 0;
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--primary-color);
+  width: auto;
+}
+
+/* --- 3. KONSISTENSI INPUT, SELECT, TEXTAREA --- */
+.form-group {
   display: flex;
   flex-direction: column;
+  gap: var(--spacing-sm);
+  margin: 0;
 }
 
 .form-group label {
-  margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-sm);
+  font-size: 13px; /* Sedikit lebih kecil agar ringkas */
   font-weight: 500;
-  color: var(--font-color);
 }
+
 .form-group label.required::after {
   content: " *";
   color: var(--red-color);
 }
 
+/* Aturan utama untuk semua field, TINGGI SAMA, PADDING SAMA */
 .form-group input,
-.form-group select,
-.form-group textarea {
+.form-group select {
   width: 100%;
-  padding: 12px var(--spacing-md);
+  height: 42px; /* Tinggi pasti untuk konsistensi */
+  padding: 0 12px;
   border: 1px solid var(--border-color);
   border-radius: var(--spacing-sm);
   font-size: var(--font-size-md);
-  font-family: "Inter", sans-serif;
   background-color: var(--card-bg);
   transition: all 0.2s ease;
-}
-.form-group textarea {
-  resize: vertical;
+  box-sizing: border-box;
 }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+/* --- 4. PENYESUAIAN KHUSUS PER BAGIAN --- */
+
+/* Aturan untuk elemen yang butuh lebar penuh di dalam fieldset */
+fieldset .full-width {
+  grid-column: 1 / -1;
 }
 
-.section-title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.actions-grid {
+/* Grid khusus untuk 4 input penambahan item agar ringkas */
+.item-adder-grid {
+  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+}
+
+/* Tombol Tambah & Info Harga */
+.actions-grid {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f4f7fa;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  margin-top: var(--spacing-sm);
+}
+
+#info-harga span {
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+}
+
+/* Daftar Pesanan yang Sudah Ditambahkan */
+.order-list-container {
+  grid-column: 1 / -1;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-md) 0;
+  max-height: 250px; /* Batasi tinggi, beri scroll jika item banyak */
+  overflow-y: auto;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   gap: var(--spacing-md);
   align-items: center;
-  margin: var(--spacing-sm) 0 var(--spacing-md) 0;
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: #eef1f4;
-  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+.order-item:last-child {
+  border-bottom: none;
 }
 
-#info-harga {
+.order-item .item-info {
+  display: flex;
+  flex-direction: column;
+}
+.order-item .item-name {
   font-weight: 500;
+}
+.order-item .item-details {
+  font-size: 12px;
   color: var(--font-color-light);
-  font-size: var(--font-size-sm);
 }
-#info-harga span {
-  display: block;
-  font-weight: 600;
-  font-size: var(--font-size-lg);
-  color: var(--font-color);
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 12px var(--spacing-md);
-  border: 1px solid var(--primary-color);
-  border-radius: var(--border-radius);
-  font-size: var(--font-size-md);
+.order-item .item-price {
   font-weight: 500;
+  white-space: nowrap;
+}
+.order-item .btn-remove {
+  background: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  color: var(--red-color);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.btn-primary {
-  color: white;
-  background-color: var(--primary-color);
-}
-.btn-secondary {
-  color: var(--primary-color);
-  background-color: var(--card-bg);
+.order-item .btn-remove:hover {
+  background-color: #fee;
 }
 
+/* Grand Total */
 .total-container {
+  grid-column: 1 / -1;
   text-align: right;
-  padding-top: var(--spacing-md);
+  padding: var(--spacing-md) 0 0 0;
+  margin-top: calc(-1 * var(--spacing-md));
   border-top: 1px solid var(--border-color);
   font-size: var(--font-size-lg);
   font-weight: 600;
 }
 
-.form-grid-akhir {
+.fieldset-akhir {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr; /* Catatan & Status bayar sejajar */
   gap: var(--spacing-md);
-  align-items: stretch; /* 1. Paksa kedua 'kotak' jadi sama tinggi */
+  align-items: stretch;
 }
 
-/* Pastikan .form-group di dalamnya siap untuk meregang */
-.form-grid-akhir .form-group {
+/* Hapus grid di dalam, cukup flex untuk jaga form-group */
+.form-grid-akhir {
+  display: contents; /* biar child langsung ikut grid parent */
+}
+
+/* Textarea lebih enak */
+.form-group textarea {
+  width: 100%;
+  min-height: 80px; /* atur sesuai kebutuhan */
+  max-height: 120px; /* biar ga kelewat panjang */
+  height: auto;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--spacing-sm);
+  font-size: var(--font-size-md);
+  background-color: var(--card-bg);
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+/* Radio container */
+.radio-group-container {
   display: flex;
-  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--spacing-sm);
+  background-color: var(--card-bg);
+  align-items: center;
+  justify-content: space-around;
+  height: 100%; /* samain tinggi dengan textarea */
 }
 
-/* 2. KUNCI UTAMA: Paksa input DI DALAM kotak untuk ikut meregang */
-.form-grid-akhir .form-group textarea,
-.form-grid-akhir .form-group select {
-  height: 100%;
+/* Label radio */
+.radio-group-container label {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border-radius: var(--spacing-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
+
+/* Sembunyikan default radio */
+.radio-group-container input[type="radio"] {
+  display: none;
+}
+
+/* Style saat dipilih */
+.radio-group-container input[type="radio"]:checked + label {
+  background-color: var(--primary-color);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* --- 6. DETAIL KECIL & POLISH --- */
+/* State disabled */
+.form-group input:disabled,
+.form-group select:disabled {
+  background-color: #eef1f4;
+  cursor: not-allowed;
+}
+
+/* Tombol utama dengan ikon */
+.btn-primary i,
+.btn-secondary i {
+  margin-right: var(--spacing-sm);
+}
+
+/* Efek hover pada tombol */
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+.btn-secondary:hover {
+  background-color: #e2e6ea;
+}
+
+/* Style fokus yang konsisten */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus,
+.radio-group-container:focus-within {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.error-message {
+  display: block;
+  width: 100%; /* Biar sepanjang parent container */
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+  grid-column: 1 / -1; /* kalau pakai grid, suruh span semua kolom */
+}
+.error-message .info-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  font-size: 13px;
+  color: #d9534f; /* merah halus */
+}
+
+.error-message .info-line i {
+  font-size: 14px;
+}
+.error-message {
+  width: 100%;
+}
+
+/* ================================================================== */
+/* == STYLING TOMBOL (BUTTONS)                                   == */
+/* ================================================================== */
+
+/* --- 1. Style Dasar untuk SEMUA Tombol --- */
+/* Ini adalah fondasi untuk semua tombol agar konsisten */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex; /* Agar ikon dan teks sejajar */
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent; /* Border transparan agar tidak goyang saat hover */
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  user-select: none; /* Mencegah teks terseleksi saat diklik cepat */
+}
+
+/* --- 2. Tombol Aksi Utama (.btn-primary) --- */
+/* Untuk aksi paling penting, seperti menyimpan. */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* --- 3. Tombol Aksi Kedua (.btn-secondary) --- */
+/* Untuk aksi tambahan, seperti 'Tambah Item'. */
+.btn-secondary {
+  background-color: var(--card-bg);
+  color: var(--primary-color);
+  border-color: var(--border-color);
+}
+
+/* --- 4. Efek Interaksi (Hover & Active/Press) --- */
+/* Efek saat mouse berada di atas tombol */
+.btn-primary:hover {
+  background-color: #0056b3; /* Sedikit lebih gelap */
+  border-color: #0056b3;
+}
+
+.btn-secondary:hover {
+  background-color: #e9ecef; /* Abu-abu sangat muda */
+  border-color: #ced4da;
+}
+
+/* Efek saat tombol sedang ditekan */
+.btn-primary:active,
+.btn-secondary:active {
+  transform: scale(0.98); /* Sedikit mengecil, memberi efek 'ditekan' */
+  filter: brightness(95%);
+}
+
+/* --- 5. Ikon di dalam Tombol --- */
+.btn-primary i,
+.btn-secondary i {
+  margin-right: 8px; /* Jarak antara ikon dan teks */
+  font-size: 0.9em; /* Buat ikon sedikit lebih kecil dari teks */
+}
+
 /* ======================================= */
 /* HALAMAN KANBAN (RE-DESIGN)              */
 /* ======================================= */
@@ -926,7 +1140,7 @@ header h1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-md);
-  align-items: end;
+  align-items: end; /* <-- INI DIA JURUSNYA: Sejajarkan di bagian bawah */
 }
 .form-grid-akhir .form-group label {
   margin-bottom: var(--spacing-sm);
@@ -1001,40 +1215,46 @@ header h1 {
 
 /* ===== STRUK KWITANSI 58MM ===== */
 .struk-container {
-  width: 58mm; /* ukuran kertas thermal */
-  margin: 0 auto;
-  font-family: "Courier New", monospace;
-  font-size: 11px;
+  max-width: 400px; /* biar tengah di layar HP */
+  margin: 10px auto;
+  font-family: "Arial", "Tahoma", sans-serif;
+  font-weight: bold;
+  font-size: 13px;
   color: #000;
   background: #fff;
-  padding: 0;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
 }
 
 /* Info transaksi */
 .struk-info p {
   display: flex;
   justify-content: space-between;
-  margin: 2px 0;
+  margin: 0; /* biar rapat */
+  padding: 1px 0;
 }
 
 /* Garis pemisah */
 .struk-separator {
   border-top: 1px solid #000;
-  margin: 4px 0;
+  margin: 2px 0;
 }
 .struk-separator-dotted {
   border-top: 1px dotted #000;
-  margin: 4px 0;
+  margin: 2px 0;
 }
 
 /* List item */
 .struk-items-list {
-  margin: 4px 0;
+  margin: 0;
+  padding: 0;
 }
 .struk-item {
   display: flex;
   justify-content: space-between;
-  margin: 2px 0;
+  margin: 0;
+  padding: 1px 0;
 }
 .struk-item .item-details {
   display: flex;
@@ -1052,25 +1272,29 @@ header h1 {
 .struk-total h3 {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
-  margin: 4px 0;
+  font-size: 14px;
+  margin: 0;
+  padding: 2px 0;
 }
 .struk-bayar {
   display: flex;
   justify-content: space-between;
-  margin: 2px 0;
+  margin: 0;
+  padding: 1px 0;
 }
 .struk-catatan p {
   display: flex;
   justify-content: space-between;
-  margin: 2px 0;
+  margin: 0;
+  padding: 1px 0;
 }
 
 /* Bagian Poin */
 .struk-poin-summary p {
   display: flex;
   justify-content: space-between;
-  margin: 1px 0;
+  margin: 0;
+  padding: 1px 0;
 }
 .exp-info-struk {
   font-size: 10px;
@@ -1081,28 +1305,34 @@ header h1 {
 /* Footer */
 .struk-footer {
   text-align: center;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .struk-footer p {
-  margin: 2px 0;
+  margin: 0;
   font-size: 11px;
 }
 
-/* ===== Print Mode ===== */
+/* === Print Mode (Kertas 58mm) === */
 @media print {
   body * {
-    visibility: hidden; /* sembunyikan semua */
+    visibility: hidden;
   }
   .struk-container,
   .struk-container * {
-    visibility: visible; /* hanya tampilkan struk */
+    visibility: visible;
   }
   .struk-container {
     position: absolute;
     left: 0;
     top: 0;
+    width: 58mm; /* ukuran kertas */
+    margin: 0; /* rapat */
+    padding: 0; /* rapat */
+    border: none; /* hilangin border saat print */
+    border-radius: 0;
+    font-size: 11px; /* kecilin biar muat */
   }
   .struk-actions {
-    display: none !important; /* tombol tidak ikut print */
+    display: none !important;
   }
 }

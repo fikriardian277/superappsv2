@@ -2,7 +2,7 @@
 // PENGATURAN - WAJIB DIISI
 // =================================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwuEnrjIheye_BVZkbh6e6nwX0TFlzdtNBDNxWNGOKlZiD8QQDQa2vXiiplQgRLNVyOnQ/exec";
+  "https://script.google.com/macros/s/AKfycbw8yPL2Yo2CuIZ9XzrsDlBW9YMlq8TtYOtE6bYSZz50sqvhQqnMjWajiskRamWaAyoViw/exec";
 
 const ATURAN_MINIMAL_KG = {
   "Cuci Setrika": 1,
@@ -33,9 +33,10 @@ async function init() {
   document
     .getElementById("nav-dashboard")
     .addEventListener("click", renderDashboard);
-  document
-    .getElementById("nav-tambah")
-    .addEventListener("click", () => renderFormKasir());
+  document.getElementById("nav-tambah").addEventListener("click", () => {
+    daftarItemsPesanan = []; // <-- Kosongkan keranjang HANYA di sini
+    renderFormKasir(); // Lalu render form yang sudah kosong
+  });
   document
     .getElementById("nav-proses")
     .addEventListener("click", () => renderKanban());
@@ -94,7 +95,7 @@ function renderDashboard() {
 
 function renderFormKasir(pelanggan = null) {
   setActiveNav("tambah");
-  daftarItemsPesanan = [];
+  // daftarItemsPesanan = [];
 
   const isMember = pelanggan && pelanggan.Status_Member === "Aktif";
   let memberStatusHtml = "";
@@ -130,49 +131,86 @@ function renderFormKasir(pelanggan = null) {
   }
 
   const formHtml = `
-    <div class="form-container">
-      <form id="laundryForm">
+  <div class="form-container">
+    <form id="laundryForm">
+      
+      <fieldset>
+        <legend>Informasi Pelanggan</legend>
         <div class="form-group full-width">
           <label for="searchPelanggan">Cari Pelanggan (Nama/HP)</label>
           <input type="text" id="searchPelanggan" list="pelanggan-list" placeholder="Ketik untuk mencari...">
           <datalist id="pelanggan-list"></datalist>
         </div>
-        <input type="hidden" id="idPelanggan" value="${
-          pelanggan ? pelanggan.ID_Pelanggan || "" : ""
-        }">
-        <div class="form-group full-width"><label for="namaPelanggan" class="required">Nama Pelanggan</label><input type="text" id="namaPelanggan" value="${
-          pelanggan ? pelanggan.Nama_Pelanggan || "" : ""
-        }" ${pelanggan ? "readonly" : ""} required></div>
-        <div class="form-group full-width"><label for="noHp" class="required">Nomor HP</label><input type="number" id="noHp" value="${
-          pelanggan ? pelanggan.No_HP || "" : ""
-        }" ${pelanggan ? "readonly" : ""} placeholder="62812..." required></div>
-        
-        <h4 class="section-title full-width">Tambah Item Pesanan</h4>
-        
-        <div class="form-group"><label for="kategori">Kategori</label><select id="kategori"><option value="">-- Pilih --</option></select></div>
-        <div class="form-group"><label for="layanan">Layanan</label><select id="layanan" disabled><option value="">-- Pilih --</option></select></div>
-        <div class="form-group"><label for="paket">Paket</label><select id="paket" disabled><option value="">-- Pilih --</option></select></div>
-        <div class="form-group"><label for="jumlah">Jumlah (KG/Pcs)</label><input type="number" id="jumlah" step="0.1" disabled></div>
-        
-        <div class="actions-grid full-width">
-          <div id="info-harga">Estimasi: <span>Rp 0</span></div>
-          <button type="button" id="addItemButton" class="btn-secondary">Tambah Item</button>
+        <input type="hidden" id="idPelanggan">
+        <div class="form-group">
+          <label for="namaPelanggan" class="required">Nama Pelanggan</label>
+          <input type="text" id="namaPelanggan" required>
         </div>
-        
-        <h4 class="section-title full-width">Daftar Pesanan</h4>
-        <ul id="order-items-list" class="order-list-container full-width"></ul>
-        <div class="total-container full-width"><strong>Grand Total: <span id="grand-total">Rp 0</span></strong></div>
-        
-       <div class="form-grid-akhir full-width">
-  <div class="form-group"><label for="catatanOrder">Catatan (Opsional)</label><textarea id="catatanOrder" rows="3"></textarea></div>
-  <div class="form-group"><label for="statusBayar">Status Pembayaran</label><select id="statusBayar" required><option value="Belum Lunas">Belum Lunas</option><option value="Lunas">Lunas</option></select></div>
-</div>
-        
-        <div id="member-actions-container" class="full-width"></div>
-        <button type="submit" id="submitButton" class="btn-primary full-width">Simpan & Cetak Struk</button>
-      </form>
+        <div class="form-group">
+          <label for="noHp" class="required">Nomor HP</label>
+          <input type="number" id="noHp" placeholder="62812..." required>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Tambah Item Pesanan</legend>
+        <div class="item-adder-grid">
+          <div class="form-group">
+            <label for="kategori">Kategori</label>
+            <select id="kategori"><option value="">-- Pilih --</option></select>
+          </div>
+          <div class="form-group">
+            <label for="layanan">Layanan</label>
+            <select id="layanan" disabled><option value="">-- Pilih --</option></select>
+          </div>
+          <div class="form-group">
+            <label for="paket">Paket</label>
+            <select id="paket" disabled><option value="">-- Pilih --</option></select>
+          </div>
+          <div class="form-group">
+            <label for="jumlah">Jumlah</label>
+            <input type="number" id="jumlah" step="0.1" placeholder="kg/pcs" disabled>
+          </div>
+        </div>
+        <div class="actions-grid">
+          <div id="info-harga">Harga: <span>Rp 0</span></div>
+          <button type="button" id="addItemButton" class="btn-secondary">
+            <i class="fa-solid fa-plus"></i> Tambah
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Daftar Pesanan</legend>
+        <ul id="order-items-list" class="order-list-container">
+          </ul>
+        <div class="total-container">
+          <strong>Grand Total: <span id="grand-total">Rp 0</span></strong>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset-akhir">
+  <div class="form-group">
+    <label for="catatanOrder">Catatan (Opsional)</label>
+    <textarea id="catatanOrder" rows="3"></textarea>
+  </div>
+  <div class="form-group">
+    <label>Status Pembayaran</label>
+    <div class="radio-group-container">
+      <input type="radio" id="statusBelumLunas" name="statusBayar" value="Belum Lunas" checked>
+      <label for="statusBelumLunas">Belum Lunas</label>
+      <input type="radio" id="statusLunas" name="statusBayar" value="Lunas">
+      <label for="statusLunas">Lunas</label>
     </div>
-  `;
+  </div>
+</fieldset>
+      <div id="member-actions-container" class="full-width"></div>
+      <button type="submit" id="submitButton" class="btn-primary full-width">
+        <i class="fa-solid fa-receipt"></i> Simpan & Cetak Struk
+      </button>
+    </form>
+  </div>
+`;
   renderPage("Tambah Order Baru", formHtml);
   setupFormKasir(pelanggan);
 
@@ -393,6 +431,7 @@ function renderPelanggan() {
 
 // GANTI SELURUH FUNGSI renderStruk ANDA DENGAN VERSI FINAL INI
 function renderStruk(transaksi) {
+  console.log("Data yang diterima renderStruk:", transaksi);
   if (!transaksi.items || !Array.isArray(transaksi.items)) {
     transaksi.items = [];
   }
@@ -406,10 +445,11 @@ function renderStruk(transaksi) {
       <div class="struk-item">
         <div class="item-details">
           <span class="item-name">${item.layanan}</span>
-          <span class="item-package">${
-            item.paket ||
-            `${item.jumlah} ${item.kategori === "Kiloan" ? "kg" : "pcs"}`
-          }</span>
+          <span class="item-package">
+  ${item.paket ? item.paket + " - " : ""}
+  ${item.jumlah} ${item.kategori === "Kiloan" ? "kg" : "pcs"}
+</span>
+
         </div>
         <span class="item-price">Rp${item.subtotal.toLocaleString(
           "id-ID"
@@ -458,7 +498,7 @@ function renderStruk(transaksi) {
       <main>
         <div id="struk-content">
           <div class="struk-info">
-            <p><span>ID Transaksi:</span> <span>${
+            <p><span>ID:</span> <span>${
               transaksi.transaksiId || transaksi.id
             }</span></p>
             <p><span>Tanggal:</span> <span>${new Date(
@@ -516,35 +556,71 @@ function renderStruk(transaksi) {
     .addEventListener("click", renderDashboard);
 }
 
-function renderDetailTransaksi(transactionId) {
-  const itemsTransaksi = semuaTransaksi.filter(
-    (t) => t.ID_Transaksi === transactionId
-  );
-  if (itemsTransaksi.length === 0) {
-    alert("Transaksi tidak ditemukan!");
-    return;
+// GANTI FUNGSI LAMA DENGAN VERSI BARU INI
+async function renderDetailTransaksi(transactionId) {
+  // Tampilkan spinner jika ada
+  if (loadingSpinner) loadingSpinner.classList.remove("hidden");
+
+  try {
+    const itemsTransaksi = semuaTransaksi.filter(
+      (t) => t.ID_Transaksi === transactionId
+    );
+    if (itemsTransaksi.length === 0) {
+      throw new Error("Transaksi tidak ditemukan!");
+    }
+    const trxPertama = itemsTransaksi[0];
+
+    // GABUNGKAN DATA: Buat objek transaksi yang lengkap untuk struk
+    const transaksiUntukStruk = {
+      id: trxPertama.ID_Transaksi,
+      tanggal: trxPertama.Tanggal_Masuk,
+      nama: trxPertama.Nama_Pelanggan,
+      noHp: trxPertama.No_HP,
+      statusBayar: trxPertama.Status_Bayar,
+      catatan: trxPertama.Catatan,
+
+      // --- BAGIAN KUNCI PERBAIKAN ---
+      // Ambil data "snapshot" poin langsung dari baris transaksi pertama
+      // Jika Poin_Awal ada nilainya, berarti dia member saat itu.
+      statusMember: trxPertama.Poin_Awal !== undefined ? "Aktif" : "Non-Member",
+      poinSebelumnya: trxPertama.Poin_Awal,
+      poinDitebus: trxPertama.Poin_Ditebus,
+
+      // Kita "tebak" status totebag dari selisih poin yang didapat.
+      // Poin didapat = (poin dari belanja) + (poin totebag).
+      // Jika Poin_Didapat > poin dari belanja, berarti dia pakai totebag.
+      pakaiTotebag:
+        trxPertama.Poin_Didapat >
+        Math.floor(
+          itemsTransaksi
+            .filter((i) => Number(i.Total_Harga) > 0)
+            .reduce((sum, item) => sum + Number(item.Total_Harga), 0) / 10000
+        ),
+
+      // Map item-item seperti biasa
+      items: itemsTransaksi.map((item) => ({
+        kategori: item.Kategori,
+        layanan: item.Layanan,
+        paket: item.Paket,
+        jumlah: item.Jumlah,
+        subtotal: Number(item.Total_Harga),
+        // Tambahkan properti isDiscount jika itu adalah item diskon
+        isDiscount: item.Layanan.toLowerCase().includes("diskon poin"),
+      })),
+    };
+
+    renderStruk(transaksiUntukStruk);
+  } catch (error) {
+    // Tampilkan error jika terjadi masalah
+    await showCustomModal({
+      title: "Error",
+      message: error.message,
+      confirmText: "OK",
+    });
+  } finally {
+    // Sembunyikan spinner setelah selesai
+    if (loadingSpinner) loadingSpinner.classList.add("hidden");
   }
-  const trxPertama = itemsTransaksi[0];
-  const grandTotal = itemsTransaksi.reduce(
-    (sum, item) => sum + Number(item.Total_Harga),
-    0
-  );
-  const transaksiUntukStruk = {
-    id: trxPertama.ID_Transaksi,
-    tanggal: trxPertama.Tanggal_Masuk,
-    nama: trxPertama.Nama_Pelanggan,
-    noHp: trxPertama.No_HP,
-    statusBayar: trxPertama.Status_Bayar,
-    catatan: trxPertama.Catatan,
-    items: itemsTransaksi.map((item) => ({
-      kategori: item.Kategori,
-      layanan: item.Layanan,
-      paket: item.Paket,
-      jumlah: item.Jumlah,
-      subtotal: Number(item.Total_Harga),
-    })),
-  };
-  renderStruk(transaksiUntukStruk);
 }
 
 // =================================================================
@@ -659,7 +735,11 @@ function setupFormKasir(pelanggan = null) {
       );
 
       if (duplikat) {
-        errorContainer.textContent = `*Pelanggan sudah terdaftar. Silakan cari di atas.`;
+        errorContainer.innerHTML = `
+    <div class="info-line">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>Pelanggan sudah terdaftar. Silakan cari di atas.</span>
+    </div>`;
         submitButton.disabled = true;
       } else {
         errorContainer.textContent = "";
@@ -770,9 +850,10 @@ async function handleFormSubmit(e) {
         : false,
       poinDitebus:
         daftarItemsPesanan.find((item) => item.isDiscount)?.poinDitebus || 0,
-      transaksiId: `SCLN-${Date.now()}`,
+      transaksiId: `SCLN-${String(Date.now()).slice(-6)}`,
       tanggal: new Date().toISOString(),
-      statusBayar: document.getElementById("statusBayar").value,
+      statusBayar: document.querySelector('input[name="statusBayar"]:checked')
+        .value,
       nama: nama,
       noHp: normalizePhoneNumber(noHpRaw),
       catatan: document.getElementById("catatanOrder").value.trim(),
@@ -799,6 +880,10 @@ async function handleFormSubmit(e) {
  * [BARU] Mengirim data ke server di latar belakang. Jika gagal, simpan ke antrian.
  * @param {object} payload - Data transaksi lengkap.
  */
+// PASTIKAN FUNGSI INI DI script.js SAMA PERSIS
+
+// GANTI FUNGSI LAMA DENGAN VERSI SIMPLE INI
+
 async function kirimDataLatarBelakang(payload) {
   try {
     const stringifiedPayload = JSON.stringify(payload);
@@ -818,7 +903,7 @@ async function kirimDataLatarBelakang(payload) {
       `Gagal mengirim transaksi ${payload.transaksiId}. Menyimpan ke antrian offline.`,
       error
     );
-    simpanKeAntrianOffline(payload); // Jika gagal, simpan!
+    simpanKeAntrianOffline(payload);
   }
 }
 
@@ -1650,19 +1735,50 @@ function showCustomModal(options) {
   });
 }
 
+// GANTI SELURUH FUNGSI LAMA ANDA DENGAN VERSI LENGKAP INI
+
 async function konfirmasiDaftarMember(pelangganId, namaPelanggan) {
   try {
+    // 1. Tampilkan modal konfirmasi
     await showCustomModal({
       title: "Konfirmasi Pendaftaran",
-      message: `Anda yakin ingin mendaftarkan ${namaPelanggan} sebagai member dengan biaya Rp 50.000?`,
-      confirmText: "Ya, Daftarkan",
-      cancelText: "Tidak",
+      message: `Anda yakin ingin mendaftarkan ${namaPelanggan} sebagai member dengan biaya Rp 50.000 (termasuk totebag)? Biaya akan ditambahkan ke transaksi ini.`,
+      confirmText: "Ya, Daftarkan & Tambahkan",
+      cancelText: "Batal",
     });
-    // Jika user klik 'Ya', kode di bawah ini akan berjalan
+
+    // --- KODE YANG HILANG ADA DI SINI ---
+
+    // 2. Cek agar biaya tidak ditambahkan dua kali
+    const sudahAdaItemPendaftaran = daftarItemsPesanan.some(
+      (item) => item.isRegistration
+    );
+
+    if (!sudahAdaItemPendaftaran) {
+      // 3. Buat objek item baru untuk biaya pendaftaran
+      const pendaftaranItem = {
+        kategori: "Lain-lain",
+        layanan: "Pendaftaran Member (+Totebag)",
+        paket: "",
+        jumlah: 1,
+        subtotal: 50000,
+        isRegistration: true, // Penanda khusus
+      };
+
+      // 4. Masukkan item biaya ke dalam keranjang belanja
+      daftarItemsPesanan.push(pendaftaranItem);
+
+      // 5. Perbarui tampilan daftar pesanan di layar agar user melihatnya
+      renderOrderList();
+    }
+
+    // --- AKHIR KODE YANG HILANG ---
+
+    // 6. Jalankan fungsi untuk mendaftarkan member di backend (ini tetap sama)
     handleRegisterMember(pelangganId, namaPelanggan);
   } catch (error) {
-    // Jika user klik 'Tidak', akan masuk ke sini
-    console.log("Pendaftaran member dibatalkan.");
+    // Jika user klik 'Batal', tidak terjadi apa-apa
+    console.log("Pendaftaran member dibatalkan oleh pengguna.");
   }
 }
 
@@ -1678,4 +1794,37 @@ function renderPage(title, contentHtml) {
       <main>${contentHtml}</main>
     </div>
   `;
+}
+
+/**
+ * Fungsi untuk membuat ID Transaksi baru yang berurutan (misal: SCLN0001, SCLN0002).
+ * @returns {string} ID Transaksi yang baru.
+ */
+function generateNewTransactionId() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheetTransaksi = ss.getSheetByName(SHEET_TRANSAKSI); // Pastikan nama sheet benar
+  const lastRow = sheetTransaksi.getLastRow();
+
+  // KASUS 1: Jika sheet masih kosong (belum ada transaksi sama sekali)
+  // Kita mulai dari 0001. Anggap baris 1 adalah header.
+  if (lastRow < 2) {
+    return "SCLN0001";
+  }
+
+  // KASUS 2: Jika sudah ada transaksi
+  // Ambil ID dari baris terakhir
+  const lastId = sheetTransaksi.getRange(lastRow, 1).getValue(); // Kolom 1 = Kolom A
+
+  // Ambil hanya bagian angkanya (misal: dari "SCLN0001" menjadi "0001")
+  const lastNumberStr = lastId.slice(4);
+
+  // Ubah menjadi angka, lalu tambah 1
+  const newNumber = parseInt(lastNumberStr, 10) + 1;
+
+  // Format kembali menjadi 4 digit dengan angka 0 di depan
+  // Misal: 2 -> "0002", 15 -> "0015", 123 -> "0123"
+  const newNumberPadded = String(newNumber).padStart(4, "0");
+
+  // Gabungkan kembali dengan prefix "SCLN"
+  return "SCLN" + newNumberPadded;
 }
