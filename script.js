@@ -141,14 +141,20 @@ function renderFormKasir(pelanggan = null) {
           <input type="text" id="searchPelanggan" list="pelanggan-list" placeholder="Ketik untuk mencari...">
           <datalist id="pelanggan-list"></datalist>
         </div>
-        <input type="hidden" id="idPelanggan">
+       <input type="hidden" id="idPelanggan" value="${
+         pelanggan ? pelanggan.ID_Pelanggan || "" : ""
+       }">
         <div class="form-group">
           <label for="namaPelanggan" class="required">Nama Pelanggan</label>
-          <input type="text" id="namaPelanggan" required>
+          <input type="text" id="namaPelanggan" value="${
+            pelanggan ? pelanggan.Nama_Pelanggan || "" : ""
+          }" ${pelanggan ? "readonly" : ""} required>
         </div>
         <div class="form-group">
           <label for="noHp" class="required">Nomor HP</label>
-          <input type="number" id="noHp" placeholder="62812..." required>
+          <input type="number" id="noHp" value="${
+            pelanggan ? pelanggan.No_HP || "" : ""
+          }" ${pelanggan ? "readonly" : ""} placeholder="62812..." required>
         </div>
       </fieldset>
 
