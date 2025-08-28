@@ -1337,3 +1337,142 @@ fieldset .full-width {
     display: none !important;
   }
 }
+
+/* ================================================================== */
+/* == BAGIAN 1: SIDEBAR NAVIGASI (STYLE DASAR UNTUK DESKTOP)       == */
+/* ================================================================== */
+
+.sidebar-nav {
+  /* Secara default (di HP), sidebar disembunyikan dengan tegas */
+  display: none !important;
+
+  /* Style ini akan aktif saat sidebar dimunculkan di layar lebar */
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100px; /* Lebar sidebar */
+  height: 100vh; /* Tinggi penuh layar */
+  background-color: var(--card-bg);
+  border-right: 1px solid var(--border-color);
+  padding: var(--spacing-lg);
+  display: flex; /* <-- Dihapus duplikasinya, cukup satu ini */
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  z-index: 1100;
+  box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.sidebar-logo {
+  width: 60px;
+  height: 60px;
+  margin-bottom: var(--spacing-lg);
+  align-self: left;
+}
+
+/* Tombol di dalam sidebar */
+.sidebar-nav .nav-button {
+  flex-direction: row; /* Ikon dan teks sejajar horizontal */
+  justify-content: center; /* Mulai dari kiri */
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 12px var(--spacing-md);
+  height: auto;
+  width: 100%;
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+/* Efek hover untuk tombol sidebar */
+.sidebar-nav .nav-button:not(.add):not(.active):hover {
+  background-color: var(--bg-color);
+}
+
+/* Tombol "Tambah Order" di sidebar */
+.sidebar-nav .nav-button.add {
+  background: var(--primary-color);
+  color: white;
+  transform: none; /* Hapus efek 'terangkat' seperti di nav bawah */
+  box-shadow: none;
+}
+.sidebar-nav .nav-button.add:hover {
+  background: var(--primary-dark);
+}
+.sidebar-nav .nav-button.add i {
+  color: white; /* Pastikan ikonnya putih */
+}
+
+/* ================================================================== */
+/* == BAGIAN 2: MEDIA QUERIES (ATURAN UNTUK TABLET & DESKTOP)    == */
+/* ================================================================== */
+
+/* --- Aturan untuk Tablet (lebar layar 768px atau lebih) --- */
+@media (min-width: 768px) {
+  /* Hilangkan padding bawah karena nav-bottom hilang */
+  body {
+    padding-bottom: 0;
+  }
+
+  /* Beri batas lebar maksimal & tengahkan konten halaman */
+  .page-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+  }
+
+  /* 1. Sembunyikan navigasi bawah yang khusus untuk HP */
+  .bottom-nav {
+    display: none;
+  }
+
+  /* 2. Tampilkan sidebar yang tadinya disembunyikan */
+  .sidebar-nav {
+    display: flex !important;
+  }
+
+  /* 3. Geser konten utama ke kanan agar tidak tertutup sidebar */
+  #app-container {
+    margin-left: 100px;
+  }
+
+  .dashboard-layout {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr; /* Diagram 60%, Kartu 40% */
+    gap: var(--spacing-lg);
+    align-items: flex-start; /* Sejajarkan dari atas */
+  }
+
+  /* Hapus margin bawah dari diagram jika sudah di dalam grid */
+  .chart-container {
+    margin-bottom: 0;
+  }
+
+  /* Pastikan summary grid di dalamnya pas */
+  .summary-grid {
+    height: 100%;
+  }
+  /* Atur ulang Kanban agar 3 kolom terlihat semua */
+  .kanban-column {
+    flex: 1;
+    max-width: none;
+  }
+
+  /* Buat daftar riwayat menjadi 2 kolom */
+  .history-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* --- Aturan Tambahan untuk Desktop (lebar layar 1024px atau lebih) --- */
+@media (min-width: 1024px) {
+  /* Beri sedikit lebih banyak ruang untuk desktop */
+  .page-container {
+    max-width: 1140px;
+  }
+
+  /* Buat summary dashboard jadi 4 kolom */
+  .summary-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

@@ -33,6 +33,22 @@ async function init() {
   document
     .getElementById("nav-dashboard")
     .addEventListener("click", renderDashboard);
+  document
+    .getElementById("sidebar-dashboard")
+    .addEventListener("click", renderDashboard);
+  document.getElementById("sidebar-tambah").addEventListener("click", () => {
+    daftarItemsPesanan = [];
+    renderFormKasir();
+  });
+  document
+    .getElementById("sidebar-proses")
+    .addEventListener("click", () => renderKanban());
+  document
+    .getElementById("sidebar-riwayat")
+    .addEventListener("click", () => renderRiwayat());
+  document
+    .getElementById("sidebar-pelanggan")
+    .addEventListener("click", renderPelanggan);
   document.getElementById("nav-tambah").addEventListener("click", () => {
     daftarItemsPesanan = []; // <-- Kosongkan keranjang HANYA di sini
     renderFormKasir(); // Lalu render form yang sudah kosong
@@ -78,12 +94,14 @@ function renderDashboard() {
     <div class="page-container">
       <header><img src="logo.png" alt="Logo" class="logo"><h1>Dashboard</h1></header>
       <main>
-        <div class="chart-container"><canvas id="statusChart"></canvas></div>
-        <div class="summary-grid">
-          <div class="summary-card" onclick="renderKanban()"><h3>Order Aktif</h3><p id="active-orders">0</p></div>
-          <div class="summary-card" onclick="renderKanban('Siap Diambil')"><h3>Belum Diambil</h3><p id="ready-orders">0</p></div>
-          <div class="summary-card"><h3>Revenue Hari Ini</h3><p id="revenue-today">Rp 0</p></div>
-          <div class="summary-card"><h3>Order Hari Ini</h3><p id="orders-today">0</p></div>
+        <div class="dashboard-layout">
+          <div class="chart-container"><canvas id="statusChart"></canvas></div>
+          <div class="summary-grid">
+            <div class="summary-card" onclick="renderKanban()"><h3>Order Aktif</h3><p id="active-orders">0</p></div>
+            <div class="summary-card" onclick="renderKanban('Siap Diambil')"><h3>Belum Diambil</h3><p id="ready-orders">0</p></div>
+            <div class="summary-card"><h3>Revenue Hari Ini</h3><p id="revenue-today">Rp 0</p></div>
+            <div class="summary-card"><h3>Order Hari Ini</h3><p id="orders-today">0</p></div>
+          </div>
         </div>
       </main>
     </div>
@@ -1476,18 +1494,46 @@ async function updateStatusDiSheet(transactionId, newStatus, noHp, nama) {
     });
     renderKanbanCards();
     if (newStatus === "Siap Diambil" && noHp) {
-      if (
-        confirm(
-          `Status cucian ${nama} (${transactionId}) sudah "Siap Diambil".\nKirim notifikasi WhatsApp?`
-        )
-      ) {
-        let pesan = `Halo Kak *${nama}*,\nCucian Anda (order ${transactionId}) sudah selesai dan siap diambil.\n\nTerima kasih!\n*SuperClean Laundry*`;
+      try {
+        await showCustomModal({
+          title: "Kirim Notifikasi?",
+          message: `Status cucian untuk ${nama} (${transactionId}) sudah "Siap Diambil". Kirim notifikasi via WhatsApp?`,
+          confirmText: "Ya, Kirim Notifikasi",
+          cancelText: "Tidak",
+        });
+
+        // --- BAGIAN BARU DIMULAI DI SINI ---
+
+        // 1. Cari semua item yang sesuai dengan ID transaksi ini
+        const itemsTransaksi = semuaTransaksi.filter(
+          (t) => t.ID_Transaksi === transactionId
+        );
+
+        // 2. Ubah array item menjadi format teks (list)
+        const itemsText = itemsTransaksi
+          .map((item) => {
+            const detailPaket =
+              item.Paket && item.Paket !== "-" ? ` (${item.Paket})` : "";
+            const detailJumlah = item.Jumlah
+              ? `- ${item.Jumlah} ${item.Kategori === "Kiloan" ? "kg" : "pcs"}`
+              : "";
+            return `- ${item.Layanan}${detailPaket} ${detailJumlah}`;
+          })
+          .join("\n"); // Gabungkan setiap item dengan baris baru
+
+        // --- AKHIR BAGIAN BARU ---
+
+        // 3. Buat pesan WhatsApp yang sudah berisi list item
+        let pesan = `Halo Kak *${nama}*,\n\nCucian Anda (order ${transactionId}) sudah selesai dan siap diambil. Berikut rinciannya:\n\n${itemsText}\n\nTerima kasih!\n*SuperClean Laundry*`;
+
         window.open(
           `https://wa.me/${normalizePhoneNumber(
             noHp
           )}?text=${encodeURIComponent(pesan)}`,
           "_blank"
         );
+      } catch (error) {
+        console.log("Pengiriman notifikasi WA dibatalkan.");
       }
     }
   } catch (error) {
@@ -1522,13 +1568,81 @@ function resetDropdowns(dropdowns) {
   if (infoHarga) infoHarga.textContent = "Estimasi Harga: Rp 0";
 }
 
+// GANTI SELURUH FUNGSI LAMA ANDA DENGAN VERSI BARU INI
+
 function kirimStrukWa(trx) {
-  const total = trx.items.reduce((sum, item) => sum + item.subtotal, 0);
-  let pesan = `*Struk SuperClean Laundry*\n\nID: *${trx.id}*\nPelanggan: ${
-    trx.nama
-  }\nTotal: *Rp ${total.toLocaleString("id-ID")}*\nStatus: *${
-    trx.statusBayar
-  }*\n\nTerima kasih!`;
+  // 1. Hitung Grand Total terlebih dahulu
+  const grandTotal = trx.items.reduce((sum, item) => sum + item.subtotal, 0);
+
+  // 2. Format daftar item menjadi teks
+  const itemsText = trx.items
+    .map((item) => {
+      // Tampilkan detail jumlah hanya jika bukan item diskon
+      const detailJumlah = item.isDiscount
+        ? ""
+        : `\n_(${item.jumlah} ${item.kategori === "Kiloan" ? "kg" : "pcs"})_`;
+
+      const hargaFormatted = `Rp${item.subtotal.toLocaleString("id-ID")}`;
+
+      // Menggunakan karakter monospace untuk alignment sederhana
+      return `\`\`\`${item.layanan.padEnd(
+        20,
+        " "
+      )}${hargaFormatted}\`\`\`${detailJumlah}`;
+    })
+    .join("\n");
+
+  // 3. (KONDISIONAL) Buat ringkasan poin jika pelanggan adalah member
+  let poinText = "";
+  if (trx.statusMember === "Aktif") {
+    const totalBelanja = trx.items
+      .filter((item) => !item.isDiscount)
+      .reduce((sum, item) => sum + item.subtotal, 0);
+    const poinDidapat = Math.floor(totalBelanja / 10000);
+    const bonusPoin = trx.pakaiTotebag ? 1 : 0;
+    const totalPoinBaru = poinDidapat + bonusPoin;
+    const poinAkhir = trx.poinSebelumnya + totalPoinBaru - trx.poinDitebus;
+
+    poinText = `
+---------------------------------
+*RINGKASAN POIN*
+Poin Awal   : ${trx.poinSebelumnya}
+Poin Baru   : +${totalPoinBaru}
+Poin Dipakai: -${trx.poinDitebus}
+---------------------------------
+*Sisa Poin   : ${poinAkhir}*
+`;
+  }
+
+  // 4. (KONDISIONAL) Siapkan teks catatan jika ada
+  const catatanText = trx.catatan ? `\nCatatan: _${trx.catatan}_` : "";
+
+  // 5. Gabungkan semua bagian menjadi satu pesan utuh
+  const pesan = `
+*--- STRUK SUPER CLEAN LAUNDRY ---*
+
+ID      : *${trx.transaksiId || trx.id}*
+Tanggal : ${new Date(trx.tanggal).toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })}
+Pelanggan: ${trx.nama}
+---------------------------------
+${itemsText}
+---------------------------------
+*Grand Total : Rp${grandTotal.toLocaleString("id-ID")}*
+Status      : *${trx.statusBayar.toUpperCase()}*
+${catatanText}
+${poinText}
+---------------------------------
+Terima Kasih!
+Simpan pesan ini sebagai bukti transaksi.
+`;
+
+  // 6. Buka link WhatsApp dengan pesan yang sudah diformat
   window.open(
     `https://wa.me/${normalizePhoneNumber(trx.noHp)}?text=${encodeURIComponent(
       pesan
