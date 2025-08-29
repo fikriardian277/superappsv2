@@ -1513,3 +1513,18 @@ fieldset .full-width {
 #app-container {
   padding-top: 60px;
 }
+
+/* Style untuk link "Masuk sebagai Owner" di halaman login */
+.owner-login-link {
+  display: block;
+  margin-top: var(--spacing-lg);
+  color: var(--font-color-light);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.owner-login-link:hover {
+  text-decoration: underline;
+  color: var(--primary-color);
+}

@@ -1,0 +1,406 @@
+/* ================================================================== */
+/* ==     CSS OWNER DASHBOARD (COMPACT & RESPONSIVE RE-STYLE)       == */
+/* ================================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
+
+:root {
+  --primary: #2563eb;
+  --success: #22c55e;
+  --warning: #facc15;
+  --info: #0ea5e9;
+  --danger: #ef4444;
+
+  --bg: #f9fafb;
+  --card: #ffffff;
+  --font: #111827;
+  --font-light: #6b7280;
+
+  --border: #e5e7eb;
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--font);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* --- NAVBAR --- */
+.owner-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 48px;
+  background: var(--card);
+  box-shadow: 0 1px 4px var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* <-- KUNCI UTAMA: Gunakan ini */
+  padding: 0 16px;
+  z-index: 1000;
+}
+
+/* Hapus position: absolute */
+.nav-brand {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Kosongkan container link agar tidak mengganggu di HP */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-links a {
+  font-size: 13px;
+  margin-left: 0;
+  text-decoration: none;
+  color: var(--font-light);
+  border-bottom: 2px solid transparent;
+  padding: 4px 0;
+}
+.nav-links a.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+.nav-links a:hover {
+  color: var(--font);
+}
+
+/* --- CONTAINER --- */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px;
+  padding-top: 64px;
+}
+header h1 {
+  font-size: 18px;
+  margin: 0;
+}
+header p {
+  font-size: 12px;
+  margin: 2px 0 0;
+  color: var(--font-light);
+}
+
+/* --- SUMMARY CARDS --- */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.card {
+  background: var(--card);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.card h3 {
+  font-size: 11px;
+  color: var(--font-light);
+  margin: 0 0 4px;
+  font-weight: 500;
+}
+.card p {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* --- CHARTS --- */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.chart-card {
+  background: var(--card);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+.chart-card h3 {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+.chart-wrapper {
+  height: 200px;
+}
+
+/* --- TABLE --- */
+.recent-transactions h2 {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+.table-container {
+  background: var(--card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th,
+td {
+  padding: 8px 10px;
+  font-size: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  font-weight: 600;
+  color: var(--font-light);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+tbody tr:hover {
+  background: #f3f4f6;
+}
+
+/* --- STATUS BADGE --- */
+.status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+.status.diterima {
+  background: var(--primary);
+}
+.status.selesai {
+  background: var(--success);
+}
+.status.proses-cuci {
+  background: var(--warning);
+  color: #111;
+}
+.status.siap-diambil {
+  background: var(--info);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+  body {
+    padding: 8px; /* Perkecil padding utama */
+  }
+  .container {
+    padding: 0;
+    padding-top: 64px;
+  }
+
+  /* --- Navbar --- */
+  .owner-navbar {
+    padding: 0 16px;
+    height: 56px;
+  }
+  .nav-links {
+    display: none;
+  }
+  .hamburger-btn {
+    display: block !important;
+    margin-right: 0;
+  }
+
+  /* --- Kartu KPI --- */
+  .summary-cards {
+    grid-template-columns: 1fr 1fr; /* Tetap 2 kolom tapi akan menyusut */
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .card {
+    padding: 10px;
+  }
+  .card h3 {
+    font-size: 10px;
+  }
+  .card p {
+    font-size: 16px;
+  }
+
+  /* --- Grafik --- */
+  .chart-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .chart-wrapper {
+    height: 200px; /* Tinggi grafik lebih pendek di HP */
+  }
+
+  /* --- Tabel Transaksi (Kunci Perubahan) --- */
+
+  table {
+    /* Paksa tabel agar lebarnya 100% dari container, tidak lebih */
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  #recent-table th {
+    font-size: 9px; /* kecilin font judul */
+    padding: 4px 2px; /* rapetin padding */
+    letter-spacing: 0; /* buang spasi ekstra biar muat */
+  }
+
+  /* Isi tabel */
+  #recent-table td {
+    font-size: 10px; /* kecilin font isi */
+    padding: 5px 3px;
+    white-space: nowrap; /* cegah teks turun baris */
+    overflow: hidden;
+    text-overflow: ellipsis; /* kalau kepanjangan kasih "..." */
+  }
+
+  /* Badge status */
+  #recent-table .status {
+    font-size: 8px; /* kecilin teks badge */
+    padding: 2px 6px; /* kecilin padding badge */
+    border-radius: 8px;
+  }
+
+  #recent-table td:nth-child(1), /* ID */
+  #recent-table td:nth-child(3), /* Total */
+  #recent-table td:nth-child(4)  /* Status */ {
+    text-align: center;
+  }
+
+  #recent-table td:nth-child(2), /* Pelanggan */
+  #recent-table td:nth-child(5)  /* Cabang */ {
+    text-align: left;
+  }
+}
+.mobile-menu {
+  position: fixed;
+  top: 48px; /* Tinggi navbar Anda */
+  right: 0;
+  width: 250px;
+  height: calc(100% - 48px);
+  background: var(--card);
+  z-index: 2000;
+  transform: translateX(100%); /* Sembunyi di kanan */
+  transition: transform 0.3s ease;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-left: 1px solid var(--border);
+}
+.mobile-menu,
+.menu-overlay {
+  top: 56px; /* ganti dari 48px ke 56px biar sama */
+  height: calc(100% - 56px);
+}
+.mobile-menu.is-active {
+  transform: translateX(0);
+}
+.mobile-menu a {
+  padding: 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--font);
+  font-weight: 500;
+}
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px; /* biar gede di HP */
+  color: var(--font);
+  margin-left: auto; /* dorong ke kanan */
+  padding: 8px; /* kasih ruang biar ga kepotong */
+}
+.mobile-menu a.active,
+.mobile-menu a:hover {
+  background-color: var(--bg);
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 48px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1900;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.menu-overlay.is-active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+body.menu-open {
+  overflow: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* TAMBAHKAN INI DI owner.css */
+.login-container {
+  max-width: 350px;
+  margin: 10vh auto;
+  padding: 24px;
+  text-align: center;
+}
+.login-logo {
+  width: 70px;
+  height: 70px;
+  margin-bottom: 16px;
+}
+.login-container h2 {
+  margin: 0 0 8px;
+}
+.login-container p {
+  margin: 0 0 24px;
+  color: var(--font-light);
+}
+.login-container .form-group {
+  margin-bottom: 16px;
+}
+.login-container input {
+  width: 100%;
+  height: 44px;
+  text-align: center;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.login-container .btn-primary {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.hidden {
+  display: none !important;
+}

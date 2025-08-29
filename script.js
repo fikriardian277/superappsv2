@@ -2,7 +2,7 @@
 // PENGATURAN - WAJIB DIISI
 // =================================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbywiXLl-4eAsiSz_cYvAEbhQVx1txu_nbDCaBqUEdIQXdU5s5I-SwOZgGsAgdR0CHF_3A/exec";
+  "https://script.google.com/macros/s/AKfycbzzF78LhJrpK01QZ2CAiel0rPN_5nQYWlAPNjw9Z-gIUkbiAGLSHyzheEnZK1EZnZKqzA/exec";
 
 const ATURAN_MINIMAL_KG = {
   "Cuci Setrika": 1,
@@ -50,8 +50,7 @@ async function init() {
     // Pastikan UI utama terlihat (jika sebelumnya disembunyikan)
     document.getElementById("app-container").classList.remove("hidden");
     document.querySelector(".bottom-nav")?.classList.remove("hidden");
-    document.querySelector(".sidebar-nav")?.classList.remove("hidden");
-
+    document.querySelector(".top-header")?.classList.remove("hidden");
     // Ini semua kode Anda yang sudah benar, posisinya di sini
     if (loadingSpinner) loadingSpinner.classList.remove("hidden");
 
@@ -103,9 +102,14 @@ async function muatDataAwal() {
   }
 }
 
-function renderPage(html) {
-  appContainer.innerHTML = html;
-  setupHamburgerMenu();
+// Di file script.js
+function renderPage(contentHtml) {
+  appContainer.innerHTML = `
+    <div class="page-container">
+      <main>${contentHtml}</main>
+    </div>
+  `;
+  setupHamburgerMenu(); // <-- TAMBAHKAN DI SINI
 }
 
 // GANTI SELURUH FUNGSI renderDashboard LAMA ANDA DENGAN INI
@@ -152,6 +156,7 @@ function renderDashboard() {
 // Pastikan Anda punya fungsi renderFullPage seperti ini
 function renderFullPage(html) {
   appContainer.innerHTML = html;
+  setupHamburgerMenu(); // <-- TAMBAHKAN DI SINI
 }
 
 function renderFormKasir(pelanggan = null) {
@@ -2043,8 +2048,8 @@ function renderLoginScreen() {
   // Sembunyikan semua elemen aplikasi utama jika ada
   document.getElementById("app-container").classList.add("hidden");
   document.querySelector(".bottom-nav")?.classList.add("hidden");
-  document.querySelector(".sidebar-nav")?.classList.add("hidden");
 
+  document.querySelector(".top-header")?.classList.add("hidden");
   const loginHtml = `
       <div class="login-container">
         <img src="logo.png" alt="Logo" class="login-logo">
@@ -2059,6 +2064,9 @@ function renderLoginScreen() {
           </div>
           <button type="submit" class="btn-primary full-width">Login</button>
         </form>
+
+        <a href="owner.html" class="owner-login-link">Masuk sebagai Owner</a>
+
       </div>
     `;
   // Tambahkan halaman login ke body

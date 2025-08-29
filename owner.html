@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Owner - SuperClean Laundry</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="owner.css" />
+  </head>
+  <body>
+    <div id="login-section">
+      <div class="login-container">
+        <img src="logo.png" alt="Logo" class="login-logo" />
+        <h2>Owner Area</h2>
+        <p>Silakan login untuk melihat laporan</p>
+        <form id="ownerLoginForm">
+          <div class="form-group">
+            <input
+              type="text"
+              id="owner-username"
+              placeholder="Username Owner"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="owner-password"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-primary">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="dashboard-section" class="hidden">
+      <nav class="owner-navbar">
+        <div class="nav-brand">Superclean Report</div>
+        <div class="nav-links">
+          <a href="#" class="active">Dashboard</a>
+          <a href="#" class="disabled">Laporan Transaksi</a>
+          <a href="#" class="disabled">Analisis</a>
+        </div>
+        <button class="hamburger-btn" id="hamburger-btn">
+          <i class="fas fa-bars"></i>
+        </button>
+      </nav>
+      <div class="mobile-menu" id="mobile-menu">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#" class="disabled">Laporan Transaksi</a>
+        <a href="#" class="disabled">Analisis</a>
+      </div>
+      <div class="menu-overlay" id="menu-overlay"></div>
+
+      <div class="container">
+        <main>
+          <div class="summary-cards">
+            <div class="card">
+              <h3>Pendapatan Hari Ini</h3>
+              <p id="kpi-revenue-today">Memuat...</p>
+            </div>
+            <div class="card">
+              <h3>Transaksi Hari Ini</h3>
+              <p id="kpi-transactions-today">Memuat...</p>
+            </div>
+            <div class="card">
+              <h3>Pendapatan Bulan Ini</h3>
+              <p id="kpi-revenue-month">Memuat...</p>
+            </div>
+            <div class="card">
+              <h3>Pelanggan Baru (Bulan Ini)</h3>
+              <p id="kpi-new-customers">Memuat...</p>
+            </div>
+          </div>
+
+          <div class="chart-grid">
+            <div class="chart-card">
+              <h3>Tren Pendapatan (7 Hari)</h3>
+              <div class="chart-wrapper">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <h3>Komposisi Layanan (Bulan Ini)</h3>
+              <div class="chart-wrapper">
+                <canvas id="serviceChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-transactions">
+            <h2><i class="fas fa-history"></i> Transaksi Terbaru</h2>
+            <div class="table-container">
+              <table id="recent-table">
+                <thead>
+                  <tr>
+                    <th>ID Transaksi</th>
+                    <th>Pelanggan</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Cabang</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="owner.js"></script>
+  </body>
+</html>
