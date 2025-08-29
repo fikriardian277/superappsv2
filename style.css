@@ -1353,6 +1353,7 @@ fieldset .full-width {
   transform: translate(-50%, -50%);
   padding: var(--spacing-lg);
   text-align: center;
+  z-index: 30000;
 }
 .login-logo {
   width: 80px;

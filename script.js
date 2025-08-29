@@ -46,7 +46,7 @@ async function init() {
       `Login sebagai cabang: ${namaCabangAktif} (ID: ${idCabangAktif})`
     );
     console.log("Nilai idCabangAktif setelah init:", idCabangAktif);
-    setupHamburgerMenu();
+
     // Pastikan UI utama terlihat (jika sebelumnya disembunyikan)
     document.getElementById("app-container").classList.remove("hidden");
     document.querySelector(".bottom-nav")?.classList.remove("hidden");
@@ -113,7 +113,7 @@ function renderPage(html) {
 function renderDashboard() {
   // 1. Atur navigasi aktif
   setActiveNav("dashboard");
-
+  setupHamburgerMenu();
   // 2. Siapkan string HTML yang LENGKAP dan BENAR, pastikan semua 'id' ada
   const dashboardHtml = `
     <div class="page-container">
@@ -497,6 +497,7 @@ function renderPelanggan() {
 }
 
 // GANTI SELURUH FUNGSI renderStruk ANDA DENGAN VERSI FINAL INI
+// GANTI SELURUH FUNGSI renderStruk ANDA DENGAN VERSI FINAL INI
 function renderStruk(transaksi) {
   console.log("Data yang diterima renderStruk:", transaksi);
   if (!transaksi.items || !Array.isArray(transaksi.items)) {
@@ -509,19 +510,20 @@ function renderStruk(transaksi) {
   const itemsHtml = transaksi.items
     .map(
       (item) => `
-      <div class="struk-item">
-        <div class="item-details">
-          <span class="item-name">${item.layanan}</span>
-          <span class="item-package">
-  ${item.paket ? item.paket + " - " : ""}
-  ${item.jumlah} ${item.kategori === "Kiloan" ? "kg" : "pcs"}
-</span>
-
-        </div>
-        <span class="item-price">Rp${item.subtotal.toLocaleString(
-          "id-ID"
-        )}</span>
-      </div>`
+            <div class="struk-item">
+                <div class="item-details">
+                    <span class="item-name">${item.layanan}</span>
+                    <span class="item-package">
+                        ${item.paket ? item.paket + " - " : ""}
+                        ${item.jumlah} ${
+        item.kategori === "Kiloan" ? "kg" : "pcs"
+      }
+                    </span>
+                </div>
+                <span class="item-price">Rp${item.subtotal.toLocaleString(
+                  "id-ID"
+                )}</span>
+            </div>`
     )
     .join("");
 
@@ -549,78 +551,92 @@ function renderStruk(transaksi) {
     }
 
     poinInfoHtml = `
-      <p class="struk-separator">-------------------------</p> <div class="struk-poin-summary">
-        <p><span>Poin Awal:</span><span>${transaksi.poinSebelumnya}</span></p>
-        <p><span>Poin Baru:</span><span>+${totalPoinBaru}</span></p>
-        <p><span>Poin Dipakai:</span><span>-${transaksi.poinDitebus}</span></p>
-        <p class="struk-separator-dotted">.........................</p>
-        <p><strong><span>Sisa Poin:</span><span>${poinAkhir}</span></strong></p>
-        ${tglKadaluarsaHtml}
-      </div>
-    `;
+            <p class="struk-separator">-------------------------</p> <div class="struk-poin-summary">
+                <p><span>Poin Awal:</span><span>${transaksi.poinSebelumnya}</span></p>
+                <p><span>Poin Baru:</span><span>+${totalPoinBaru}</span></p>
+                <p><span>Poin Dipakai:</span><span>-${transaksi.poinDitebus}</span></p>
+                <p class="struk-separator-dotted">.........................</p>
+                <p><strong><span>Sisa Poin:</span><span>${poinAkhir}</span></strong></p>
+                ${tglKadaluarsaHtml}
+            </div>
+        `;
   }
 
   const strukHtml = `
-    <div class="page-container struk-container">
-      <main>
-        <div id="struk-content">
-          <div class="struk-info">
-            <p><span>ID:</span> <span>${
-              transaksi.transaksiId || transaksi.id
-            }</span></p>
-            <p><span>Tanggal:</span> <span>${new Date(
-              transaksi.tanggal
-            ).toLocaleString("id-ID", {
-              day: "2-digit",
-              month: "short",
-              year: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}</span></p>
-            <p><span>Pelanggan:</span> <span>${transaksi.nama}</span></p>
-          </div>
-          <p class="struk-separator">-------------------------</p> <div class="struk-items-list">
-            ${itemsHtml}
-          </div>
-          <p class="struk-separator">-------------------------</p> <div class="struk-total">
-            <h3><span>Grand Total:</span> <span>Rp${grandTotal.toLocaleString(
-              "id-ID"
-            )}</span></h3>
-          </div>
-          <p class="struk-bayar"><span>Status:</span> <span><strong>${
-            transaksi.statusBayar
-          }</strong></span></p>
-          ${
-            transaksi.catatan
-              ? `<div class="struk-catatan"><p><span>Catatan:</span> <span>${transaksi.catatan}</span></p></div>`
-              : ""
-          }
-          ${poinInfoHtml}
-          <p class="struk-separator">-------------------------</p> <div class="struk-footer">
-            <p>Terima Kasih!</p>
-            <p>Simpan struk ini sebagai bukti.</p>
-          </div>
+        <div class="page-container struk-container">
+            <main>
+                <div id="struk-content">
+                    <div class="struk-info">
+                        <p><span>ID:</span> <span>${
+                          transaksi.transaksiId || transaksi.id
+                        }</span></p>
+                        <p><span>Tanggal:</span> <span>${new Date(
+                          transaksi.tanggal
+                        ).toLocaleString("id-ID", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}</span></p>
+                        <p><span>Pelanggan:</span> <span>${
+                          transaksi.nama
+                        }</span></p>
+                    </div>
+                    <p class="struk-separator">-------------------------</p> <div class="struk-items-list">
+                        ${itemsHtml}
+                    </div>
+                    <p class="struk-separator">-------------------------</p> <div class="struk-total">
+                        <h3><span>Grand Total:</span> <span>Rp${grandTotal.toLocaleString(
+                          "id-ID"
+                        )}</span></h3>
+                    </div>
+                    <p class="struk-bayar"><span>Status:</span> <span><strong>${
+                      transaksi.statusBayar
+                    }</strong></span></p>
+                    ${
+                      transaksi.catatan
+                        ? `<div class="struk-catatan"><p><span>Catatan:</span> <span>${transaksi.catatan}</span></p></div>`
+                        : ""
+                    }
+                    ${poinInfoHtml}
+                    <p class="struk-separator">-------------------------</p> <div class="struk-footer">
+                        <p>Terima Kasih!</p>
+                        <p>Simpan struk ini sebagai bukti.</p>
+                    </div>
+                </div>
+                <div class="struk-actions">
+                    <button id="tombol-cetak"><i class="fa-solid fa-print"></i> Cetak Struk</button>
+                    <button id="tombol-wa"><i class="fa-brands fa-whatsapp"></i> Kirim via WhatsApp</button>
+                    <button id="tombol-kembali"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                </div>
+            </main>
         </div>
-        <div class="struk-actions">
-          <button id="tombol-cetak"><i class="fa-solid fa-print"></i> Cetak Struk</button>
-          <button id="tombol-wa"><i class="fa-brands fa-whatsapp"></i> Kirim via WhatsApp</button>
-          <button id="tombol-kembali"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-        </div>
-      </main>
-    </div>
-  `;
+    `;
 
-  renderPage("Struk Transaksi", strukHtml); // Judul halaman juga diubah
+  // LANGKAH PENTING:
+  // 1. Render HTML ke halaman
+  renderPage(strukHtml);
 
-  document
-    .getElementById("tombol-cetak")
-    .addEventListener("click", () => window.print());
-  document
-    .getElementById("tombol-wa")
-    .addEventListener("click", () => kirimStrukWa(transaksi));
-  document
-    .getElementById("tombol-kembali")
-    .addEventListener("click", renderDashboard);
+  // 2. TUNGGU proses rendering S E L E S A I
+  // Baris ini akan memastikan kode event listener baru dieksekusi setelah semua elemen tersedia.
+  setTimeout(() => {
+    // DAPATKAN ELEMEN SETELAH HTML dijamin ada di DOM.
+    const tombolCetak = document.getElementById("tombol-cetak");
+    const tombolWa = document.getElementById("tombol-wa");
+    const tombolKembali = document.getElementById("tombol-kembali");
+
+    // Tambahkan event listener hanya jika elemen ditemukan
+    if (tombolCetak) {
+      tombolCetak.addEventListener("click", () => window.print());
+    }
+    if (tombolWa) {
+      tombolWa.addEventListener("click", () => kirimStrukWa(transaksi));
+    }
+    if (tombolKembali) {
+      tombolKembali.addEventListener("click", renderDashboard);
+    }
+  }, 0); // Menggunakan setTimeout dengan 0 ms akan menunda eksekusi hingga event loop berikutnya.
 }
 
 // GANTI FUNGSI LAMA DENGAN VERSI BARU INI
