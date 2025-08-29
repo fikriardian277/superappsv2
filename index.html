@@ -19,26 +19,32 @@
     <div id="loading-spinner" class="hidden">
       <div class="spinner"></div>
     </div>
-    <nav class="sidebar-nav">
-      <img src="logo.png" alt="Logo" class="sidebar-logo" />
-      <button id="sidebar-dashboard" class="nav-button active">
-        <i class="fa-solid fa-chart-pie"></i>
-      </button>
-      <button id="sidebar-proses" class="nav-button">
-        <i class="fa-solid fa-rotate"></i>
-      </button>
 
-      <button id="sidebar-tambah" class="nav-button add">
-        <i class="fa-solid fa-plus"></i>
+    <header class="top-header">
+      <button class="hamburger-btn" id="hamburger-btn">
+        <i class="fa-solid fa-bars"></i>
       </button>
+      <h1 id="header-title">Dashboard</h1>
+      <div class="header-icon-placeholder"></div>
+    </header>
 
-      <button id="sidebar-riwayat" class="nav-button">
-        <i class="fa-solid fa-clock-rotate-left"></i>
-      </button>
-      <button id="sidebar-pelanggan" class="nav-button">
-        <i class="fa-solid fa-users"></i>
-      </button>
+    <nav class="hamburger-menu" id="hamburger-menu">
+      <div class="menu-header">
+        <img src="logo.png" alt="Logo" class="menu-logo" />
+        <div class="branch-info">
+          <span class="branch-name" id="menu-branch-name">Nama Cabang</span>
+          <span class="branch-id" id="menu-branch-id">ID Cabang</span>
+        </div>
+      </div>
+      <div class="menu-links">
+        <button id="menu-logout" class="nav-button logout">
+          <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+        </button>
+      </div>
     </nav>
+
+    <div class="menu-overlay" id="menu-overlay"></div>
+
     <div id="app-container"></div>
 
     <nav class="bottom-nav">

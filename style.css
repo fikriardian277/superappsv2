@@ -306,6 +306,12 @@ header {
   margin-bottom: var(--spacing-lg);
   padding: var(--spacing-sm) 0;
   border-bottom: 1px solid var(--border-color);
+  position: fixed; /* Membuat header tetap di atas */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 900; /* Pastikan ini adalah nilai tertinggi */
+  background-color: var(--page-bg);
 }
 
 /* Header di Dashboard (dengan logo) */
@@ -1029,7 +1035,7 @@ fieldset .full-width {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 20000;
 }
 .spinner {
   border: 4px solid rgba(0, 0, 0, 0.1);
@@ -1338,141 +1344,171 @@ fieldset .full-width {
   }
 }
 
-/* ================================================================== */
-/* == BAGIAN 1: SIDEBAR NAVIGASI (STYLE DASAR UNTUK DESKTOP)       == */
-/* ================================================================== */
-
-.sidebar-nav {
-  /* Secara default (di HP), sidebar disembunyikan dengan tegas */
-  display: none !important;
-
-  /* Style ini akan aktif saat sidebar dimunculkan di layar lebar */
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100px; /* Lebar sidebar */
-  height: 100vh; /* Tinggi penuh layar */
-  background-color: var(--card-bg);
-  border-right: 1px solid var(--border-color);
+.login-container {
+  width: 100%;
+  max-width: 350px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   padding: var(--spacing-lg);
-  display: flex; /* <-- Dihapus duplikasinya, cukup satu ini */
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  z-index: 1100;
-  box-shadow: 0 4px 20px var(--shadow-color);
+  text-align: center;
 }
-
-.sidebar-logo {
-  width: 60px;
-  height: 60px;
+.login-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: var(--spacing-md);
+}
+.login-container h2 {
+  margin-bottom: var(--spacing-sm);
+}
+.login-container p {
+  margin-top: 0;
   margin-bottom: var(--spacing-lg);
-  align-self: left;
+  color: var(--font-color-light);
+}
+.login-container .form-group {
+  margin-bottom: var(--spacing-md);
+}
+.login-container input {
+  text-align: center;
+  height: 48px;
 }
 
-/* Tombol di dalam sidebar */
-.sidebar-nav .nav-button {
-  flex-direction: row; /* Ikon dan teks sejajar horizontal */
-  justify-content: center; /* Mulai dari kiri */
+/* ================================================================== */
+/* == CSS UNTUK HAMBURGER MENU TAMBAHAN                          == */
+/* ================================================================== */
+
+/* --- Header Atas --- */
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-md);
+  z-index: 10000;
+}
+.top-header h1 {
+  font-size: var(--font-size-lg);
+  margin: 0;
+}
+.hamburger-btn,
+.header-icon-placeholder {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--font-color);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+}
+
+/* --- Panel Menu Geser --- */
+.hamburger-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100%;
+  background-color: var(--card-bg);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 3000;
+  transform: translateX(-100%); /* Sembunyi di kiri */
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  z-index: 10001;
+}
+.hamburger-menu.is-active {
+  transform: translateX(0); /* Munculkan */
+}
+
+/* --- Isi dari Menu Geser --- */
+.menu-header {
+  padding: var(--spacing-lg) var(--spacing-md);
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: 12px var(--spacing-md);
-  height: auto;
-  width: 100%;
+}
+.menu-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+}
+.branch-info {
+  display: flex;
+  flex-direction: column;
+}
+.branch-name {
+  font-weight: 600;
+}
+.branch-id {
+  font-size: var(--font-size-xs);
+  color: var(--font-color-light);
+}
+
+.menu-links {
+  padding: var(--spacing-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  flex-grow: 1;
+}
+.menu-links .nav-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: var(--spacing-md);
+  padding: 12px 16px;
   border-radius: var(--border-radius);
   font-size: var(--font-size-sm);
+  color: var(--font-color-light);
   font-weight: 500;
+  text-decoration: none;
 }
-
-/* Efek hover untuk tombol sidebar */
-.sidebar-nav .nav-button:not(.add):not(.active):hover {
+.menu-links .nav-button.logout {
+  margin-top: auto; /* Mendorong ke paling bawah */
+  color: var(--red-color);
+}
+.menu-links .nav-button:not(.disabled):hover {
   background-color: var(--bg-color);
 }
-
-/* Tombol "Tambah Order" di sidebar */
-.sidebar-nav .nav-button.add {
-  background: var(--primary-color);
-  color: white;
-  transform: none; /* Hapus efek 'terangkat' seperti di nav bawah */
-  box-shadow: none;
+.menu-links .nav-button.logout:hover {
+  background-color: #fff5f5;
 }
-.sidebar-nav .nav-button.add:hover {
-  background: var(--primary-dark);
-}
-.sidebar-nav .nav-button.add i {
-  color: white; /* Pastikan ikonnya putih */
+.menu-links .nav-button.disabled {
+  color: #ced4da;
+  cursor: not-allowed;
 }
 
-/* ================================================================== */
-/* == BAGIAN 2: MEDIA QUERIES (ATURAN UNTUK TABLET & DESKTOP)    == */
-/* ================================================================== */
-
-/* --- Aturan untuk Tablet (lebar layar 768px atau lebih) --- */
-@media (min-width: 768px) {
-  /* Hilangkan padding bawah karena nav-bottom hilang */
-  body {
-    padding-bottom: 0;
-  }
-
-  /* Beri batas lebar maksimal & tengahkan konten halaman */
-  .page-container {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: var(--spacing-lg);
-  }
-
-  /* 1. Sembunyikan navigasi bawah yang khusus untuk HP */
-  .bottom-nav {
-    display: none;
-  }
-
-  /* 2. Tampilkan sidebar yang tadinya disembunyikan */
-  .sidebar-nav {
-    display: flex !important;
-  }
-
-  /* 3. Geser konten utama ke kanan agar tidak tertutup sidebar */
-  #app-container {
-    margin-left: 100px;
-  }
-
-  .dashboard-layout {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr; /* Diagram 60%, Kartu 40% */
-    gap: var(--spacing-lg);
-    align-items: flex-start; /* Sejajarkan dari atas */
-  }
-
-  /* Hapus margin bawah dari diagram jika sudah di dalam grid */
-  .chart-container {
-    margin-bottom: 0;
-  }
-
-  /* Pastikan summary grid di dalamnya pas */
-  .summary-grid {
-    height: 100%;
-  }
-  /* Atur ulang Kanban agar 3 kolom terlihat semua */
-  .kanban-column {
-    flex: 1;
-    max-width: none;
-  }
-
-  /* Buat daftar riwayat menjadi 2 kolom */
-  .history-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
+/* --- Overlay --- */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9000;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+.menu-overlay.is-active {
+  opacity: 1;
+  pointer-events: all;
 }
 
-/* --- Aturan Tambahan untuk Desktop (lebar layar 1024px atau lebih) --- */
-@media (min-width: 1024px) {
-  /* Beri sedikit lebih banyak ruang untuk desktop */
-  .page-container {
-    max-width: 1140px;
-  }
-
-  /* Buat summary dashboard jadi 4 kolom */
-  .summary-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
+/* --- Penyesuaian Konten Utama --- */
+/* Beri ruang di atas agar tidak tertutup header */
+#app-container {
+  padding-top: 60px;
 }

@@ -2,7 +2,7 @@
 // PENGATURAN - WAJIB DIISI
 // =================================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbw8yPL2Yo2CuIZ9XzrsDlBW9YMlq8TtYOtE6bYSZz50sqvhQqnMjWajiskRamWaAyoViw/exec";
+  "https://script.google.com/macros/s/AKfycbywiXLl-4eAsiSz_cYvAEbhQVx1txu_nbDCaBqUEdIQXdU5s5I-SwOZgGsAgdR0CHF_3A/exec";
 
 const ATURAN_MINIMAL_KG = {
   "Cuci Setrika": 1,
@@ -27,53 +27,72 @@ document.addEventListener("DOMContentLoaded", init);
 // =================================================================
 // FUNGSI UTAMA & RENDER HALAMAN
 // =================================================================
+// GANTI SELURUH FUNGSI init() ANDA DENGAN INI
+
+let idCabangAktif = null;
+let namaCabangAktif = null;
 
 async function init() {
-  if (loadingSpinner) loadingSpinner.classList.remove("hidden");
-  document
-    .getElementById("nav-dashboard")
-    .addEventListener("click", renderDashboard);
-  document
-    .getElementById("sidebar-dashboard")
-    .addEventListener("click", renderDashboard);
-  document.getElementById("sidebar-tambah").addEventListener("click", () => {
-    daftarItemsPesanan = [];
-    renderFormKasir();
-  });
-  document
-    .getElementById("sidebar-proses")
-    .addEventListener("click", () => renderKanban());
-  document
-    .getElementById("sidebar-riwayat")
-    .addEventListener("click", () => renderRiwayat());
-  document
-    .getElementById("sidebar-pelanggan")
-    .addEventListener("click", renderPelanggan);
-  document.getElementById("nav-tambah").addEventListener("click", () => {
-    daftarItemsPesanan = []; // <-- Kosongkan keranjang HANYA di sini
-    renderFormKasir(); // Lalu render form yang sudah kosong
-  });
-  document
-    .getElementById("nav-proses")
-    .addEventListener("click", () => renderKanban());
-  document
-    .getElementById("nav-riwayat")
-    .addEventListener("click", () => renderRiwayat());
-  document
-    .getElementById("nav-pelanggan")
-    .addEventListener("click", renderPelanggan);
-  await muatDataAwal();
-  renderDashboard();
-  sinkronkanDataOffline();
-  if (loadingSpinner) loadingSpinner.classList.add("hidden");
+  // 1. Cek dulu apakah ada info login di penyimpanan browser
+  idCabangAktif = localStorage.getItem("idCabangLaundry");
+  namaCabangAktif = localStorage.getItem("namaCabangLaundry");
+
+  // 2. Buat "Gerbang" Pengecekan
+  if (idCabangAktif) {
+    // ===============================================
+    // JIKA SUDAH LOGIN, JALANKAN SEMUA KODE INI
+    // ===============================================
+    console.log(
+      `Login sebagai cabang: ${namaCabangAktif} (ID: ${idCabangAktif})`
+    );
+    console.log("Nilai idCabangAktif setelah init:", idCabangAktif);
+    setupHamburgerMenu();
+    // Pastikan UI utama terlihat (jika sebelumnya disembunyikan)
+    document.getElementById("app-container").classList.remove("hidden");
+    document.querySelector(".bottom-nav")?.classList.remove("hidden");
+    document.querySelector(".sidebar-nav")?.classList.remove("hidden");
+
+    // Ini semua kode Anda yang sudah benar, posisinya di sini
+    if (loadingSpinner) loadingSpinner.classList.remove("hidden");
+
+    document
+      .getElementById("nav-dashboard")
+      .addEventListener("click", renderDashboard);
+    document.getElementById("nav-tambah").addEventListener("click", () => {
+      daftarItemsPesanan = [];
+      renderFormKasir();
+    });
+    document
+      .getElementById("nav-proses")
+      .addEventListener("click", () => renderKanban());
+    document
+      .getElementById("nav-riwayat")
+      .addEventListener("click", () => renderRiwayat());
+    document
+      .getElementById("nav-pelanggan")
+      .addEventListener("click", renderPelanggan);
+
+    await muatDataAwal();
+    renderDashboard();
+    sinkronkanDataOffline();
+    if (loadingSpinner) loadingSpinner.classList.add("hidden");
+  } else {
+    // ===============================================
+    // JIKA BELUM LOGIN, HANYA JALANKAN INI
+    // ===============================================
+    renderLoginScreen();
+  }
 }
+
+// GANTI FUNGSI muatDataAwal DENGAN INI
 
 async function muatDataAwal() {
   try {
+    // Tambahkan parameter &cabang=${idCabangAktif} di setiap URL
     const [servicesRes, transactionsRes, customersRes] = await Promise.all([
-      fetch(`${API_URL}?action=getServices`),
-      fetch(API_URL),
-      fetch(`${API_URL}?action=getCustomers`),
+      fetch(`${API_URL}?action=getServices`), // Layanan tidak perlu filter
+      fetch(`${API_URL}?cabang=${idCabangAktif}`), // Ambil transaksi cabang ini
+      fetch(`${API_URL}?action=getCustomers&cabang=${idCabangAktif}`), // Ambil pelanggan cabang ini
     ]);
     daftarLayanan = await servicesRes.json();
     semuaTransaksi = await transactionsRes.json();
@@ -86,29 +105,53 @@ async function muatDataAwal() {
 
 function renderPage(html) {
   appContainer.innerHTML = html;
+  setupHamburgerMenu();
 }
 
+// GANTI SELURUH FUNGSI renderDashboard LAMA ANDA DENGAN INI
+
 function renderDashboard() {
+  // 1. Atur navigasi aktif
   setActiveNav("dashboard");
+
+  // 2. Siapkan string HTML yang LENGKAP dan BENAR, pastikan semua 'id' ada
   const dashboardHtml = `
     <div class="page-container">
-      <header><img src="logo.png" alt="Logo" class="logo"><h1>Dashboard</h1></header>
+      
       <main>
         <div class="dashboard-layout">
           <div class="chart-container"><canvas id="statusChart"></canvas></div>
           <div class="summary-grid">
-            <div class="summary-card" onclick="renderKanban()"><h3>Order Aktif</h3><p id="active-orders">0</p></div>
-            <div class="summary-card" onclick="renderKanban('Siap Diambil')"><h3>Belum Diambil</h3><p id="ready-orders">0</p></div>
-            <div class="summary-card"><h3>Revenue Hari Ini</h3><p id="revenue-today">Rp 0</p></div>
-            <div class="summary-card"><h3>Order Hari Ini</h3><p id="orders-today">0</p></div>
+            <div class="summary-card" onclick="renderKanban()">
+              <h3>Order Aktif</h3>
+              <p id="active-orders">0</p> </div>
+            <div class="summary-card" onclick="renderKanban('Siap Diambil')">
+              <h3>Belum Diambil</h3>
+              <p id="ready-orders">0</p> </div>
+            <div class="summary-card">
+              <h3>Revenue Hari Ini</h3>
+              <p id="revenue-today">Rp 0</p> </div>
+            <div class="summary-card">
+              <h3>Order Hari Ini</h3>
+              <p id="orders-today">0</p> </div>
           </div>
         </div>
       </main>
     </div>
   `;
+
+  // 3. Render HTML ke dalam #app-container
+  // Kita gunakan renderFullPage (yang isinya appContainer.innerHTML) karena HTML di atas sudah lengkap
   renderFullPage(dashboardHtml);
+
+  // 4. SETELAH HTML dijamin ada, BARU panggil fungsi untuk mengisi data
   hitungStatistik();
   renderStatusChart();
+}
+
+// Pastikan Anda punya fungsi renderFullPage seperti ini
+function renderFullPage(html) {
+  appContainer.innerHTML = html;
 }
 
 function renderFormKasir(pelanggan = null) {
@@ -235,7 +278,7 @@ function renderFormKasir(pelanggan = null) {
     </form>
   </div>
 `;
-  renderPage("Tambah Order Baru", formHtml);
+  renderPage(formHtml);
   setupFormKasir(pelanggan);
 
   if (isMember) {
@@ -419,7 +462,7 @@ function renderKanban(filter = "semua") {
       </div>
     </div>
   `;
-  renderPage("Proses Cucian", kanbanContent);
+  renderPage(kanbanContent);
   renderKanbanCards(filter);
 }
 
@@ -431,7 +474,7 @@ function renderRiwayat() {
     </div>
     <ul class="history-list"></ul>
   `;
-  renderPage("Riwayat Transaksi", riwayatContent);
+  renderPage(riwayatContent);
   updateRiwayatList();
   document
     .getElementById("searchRiwayat")
@@ -446,7 +489,7 @@ function renderPelanggan() {
     </div>
     <ul class="history-list"></ul>
   `;
-  renderPage("Daftar Pelanggan", pelangganContent);
+  renderPage(pelangganContent);
   updatePelangganList();
   document
     .getElementById("searchPelanggan")
@@ -847,7 +890,7 @@ async function handleFormSubmit(e) {
   const submitButton = document.getElementById("submitButton");
   submitButton.disabled = true;
   submitButton.innerHTML = 'Memproses... <div class="spinner-kecil"></div>';
-
+  console.log("Nilai idCabangAktif sebelum kirim:", idCabangAktif);
   // UBAH BAGIAN 'catch' MENJADI 'async' dan gunakan 'showCustomModal'
   try {
     const nama = document.getElementById("namaPelanggan").value.trim();
@@ -863,6 +906,7 @@ async function handleFormSubmit(e) {
     );
 
     const payload = {
+      idCabang: idCabangAktif,
       pelangganId: pelangganId,
       poinSebelumnya: pelangganData ? pelangganData.Total_Poin || 0 : 0,
       statusMember: pelangganData
@@ -1706,12 +1750,43 @@ async function sinkronkanDataOffline() {
   }
 }
 
+// GANTI FUNGSI setActiveNav LAMA ANDA DENGAN VERSI BARU INI
+
+// GANTI SELURUH FUNGSI setActiveNav LAMA ANDA DENGAN INI
+
 function setActiveNav(id) {
+  // 1. Hapus kelas 'active' dari SEMUA tombol navigasi di seluruh halaman
   document
     .querySelectorAll(".nav-button")
     .forEach((btn) => btn.classList.remove("active"));
-  const activeBtn = document.getElementById(`nav-${id}`);
-  if (activeBtn) activeBtn.classList.add("active");
+
+  // 2. Cari tombol yang sesuai di NAVIGASI BAWAH
+  const activeBtnBottom = document.getElementById(`nav-${id}`);
+  if (
+    activeBtnBottom &&
+    !activeBtnBottom.classList.contains("fab-add-button")
+  ) {
+    activeBtnBottom.classList.add("active");
+  }
+
+  // 3. Cari tombol yang sesuai di HAMBURGER MENU
+  const activeBtnMenu = document.querySelector(`.hamburger-menu #nav-${id}`);
+  if (activeBtnMenu) {
+    activeBtnMenu.classList.add("active");
+  }
+
+  // 4. Update judul di header atas
+  const titleElement = document.getElementById("header-title");
+  const buttonWithText = activeBtnBottom || activeBtnMenu; // Prioritaskan nav bawah untuk judul
+  const spanInsideButton = buttonWithText?.querySelector("span");
+
+  if (spanInsideButton) {
+    titleElement.textContent = spanInsideButton.textContent;
+  } else if (id === "tambah") {
+    titleElement.textContent = "Tambah Order";
+  } else if (id === "dashboard") {
+    titleElement.textContent = "Dashboard";
+  }
 }
 
 // TAMBAHKAN FUNGSI BARU INI DI MANA SAJA DALAM script.js
@@ -1907,10 +1982,9 @@ function renderFullPage(html) {
 }
 
 // Untuk semua halaman standar dengan header simpel
-function renderPage(title, contentHtml) {
+function renderPage(contentHtml) {
   appContainer.innerHTML = `
     <div class="page-container">
-      <header class="header-simple"><h1>${title}</h1></header>
       <main>${contentHtml}</main>
     </div>
   `;
@@ -1947,4 +2021,123 @@ function generateNewTransactionId() {
 
   // Gabungkan kembali dengan prefix "SCLN"
   return "SCLN" + newNumberPadded;
+}
+
+function renderLoginScreen() {
+  // Sembunyikan semua elemen aplikasi utama jika ada
+  document.getElementById("app-container").classList.add("hidden");
+  document.querySelector(".bottom-nav")?.classList.add("hidden");
+  document.querySelector(".sidebar-nav")?.classList.add("hidden");
+
+  const loginHtml = `
+      <div class="login-container">
+        <img src="logo.png" alt="Logo" class="login-logo">
+        <h2>Selamat Datang</h2>
+        <p>Silakan login untuk melanjutkan</p>
+        <form id="loginForm">
+          <div class="form-group">
+            <input type="text" id="username" placeholder="Username" required>
+          </div>
+          <div class="form-group">
+            <input type="password" id="password" placeholder="Password" required>
+          </div>
+          <button type="submit" class="btn-primary full-width">Login</button>
+        </form>
+      </div>
+    `;
+  // Tambahkan halaman login ke body
+  document.body.insertAdjacentHTML("beforeend", loginHtml);
+
+  // Tambahkan event listener untuk form login
+  document
+    .getElementById("loginForm")
+    .addEventListener("submit", handleLoginAttempt);
+}
+
+// FUNGSI BARU UNTUK PROSES LOGIN
+async function handleLoginAttempt(e) {
+  e.preventDefault();
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
+  const loginButton = document.querySelector("#loginForm button");
+  loginButton.textContent = "Memproses...";
+  loginButton.disabled = true;
+
+  try {
+    const loginData = JSON.stringify({ username, password });
+    const response = await fetch(
+      `${API_URL}?action=login&data=${encodeURIComponent(loginData)}`
+    );
+    const result = await response.json();
+
+    if (result.status === "success") {
+      // Jika berhasil, simpan info cabang ke localStorage
+      localStorage.setItem("idCabangLaundry", result.idCabang);
+      localStorage.setItem("namaCabangLaundry", result.namaCabang);
+      // Muat ulang halaman, fungsi init() akan otomatis membawa ke dashboard
+      location.reload();
+    } else {
+      alert(result.message);
+      loginButton.textContent = "Login";
+      loginButton.disabled = false;
+    }
+  } catch (error) {
+    alert("Gagal terhubung ke server. Cek koneksi internet Anda.");
+    loginButton.textContent = "Login";
+    loginButton.disabled = false;
+  }
+}
+
+// FUNGSI BARU UNTUK MENGATUR HAMBURGER MENU
+function setupHamburgerMenu() {
+  const hamburgerBtn = document.getElementById("hamburger-btn");
+  const hamburgerMenu = document.getElementById("hamburger-menu");
+  const menuOverlay = document.getElementById("menu-overlay");
+
+  const menuBranchName = document.getElementById("menu-branch-name");
+  const menuBranchId = document.getElementById("menu-branch-id");
+  const logoutBtn = document.getElementById("menu-logout"); // 👈 Dapatkan tombol logout
+
+  const namaCabang = localStorage.getItem("namaCabangLaundry");
+  const idCabang = localStorage.getItem("idCabangLaundry");
+
+  if (
+    hamburgerBtn &&
+    hamburgerMenu &&
+    menuOverlay &&
+    menuBranchName &&
+    menuBranchId &&
+    logoutBtn
+  ) {
+    if (namaCabang) {
+      menuBranchName.textContent = namaCabang;
+    }
+    if (idCabang) {
+      menuBranchId.textContent = `ID: ${idCabang}`;
+    }
+
+    hamburgerBtn.addEventListener("click", () => {
+      hamburgerMenu.classList.toggle("is-active");
+      menuOverlay.classList.toggle("is-active");
+    });
+
+    menuOverlay.addEventListener("click", () => {
+      hamburgerMenu.classList.remove("is-active");
+      menuOverlay.classList.remove("is-active");
+    });
+
+    // 👈 Tambahkan event listener untuk tombol logout
+    logoutBtn.addEventListener("click", handleLogout);
+  }
+}
+
+function handleLogout() {
+  // Tampilkan konfirmasi sebelum logout
+  if (confirm("Anda yakin ingin logout?")) {
+    // Hapus data sesi dari penyimpanan browser
+    localStorage.removeItem("idCabangLaundry");
+    localStorage.removeItem("namaCabangLaundry");
+    // Muat ulang halaman, otomatis akan kembali ke layar login
+    location.reload();
+  }
 }
