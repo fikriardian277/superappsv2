@@ -2,7 +2,7 @@
 // PENGATURAN - WAJIB DIISI
 // =================================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbzzF78LhJrpK01QZ2CAiel0rPN_5nQYWlAPNjw9Z-gIUkbiAGLSHyzheEnZK1EZnZKqzA/exec";
+  "https://script.google.com/macros/s/AKfycbxNKw7TocQBlrNpZoPAilWsLOlcKAyR7OxZ_3FIw6jacV3TaEkLcmy5tycoYUZmJusY-w/exec";
 
 const ATURAN_MINIMAL_KG = {
   "Cuci Setrika": 1,
