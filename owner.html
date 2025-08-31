@@ -9,6 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="owner.css" />
+    <!-- <link rel="stylesheet" href="owner-modern-step1.css" /> -->
   </head>
   <body>
     <div id="login-section">
@@ -44,7 +45,15 @@
         <div class="nav-links">
           <a href="#" id="desktop-nav-dashboard" class="active">Dashboard</a>
           <a href="#" id="desktop-nav-laporan">Laporan Transaksi</a>
-          <a href="#" id="desktop-nav-analisis">Analisis</a>
+          <div class="nav-dropdown">
+            <a href="#" class="disabled">Analisis ▼</a>
+            <div class="dropdown-content">
+              <a href="#" id="desktop-nav-analisis-layanan">Analisis Layanan</a>
+              <a href="#" id="desktop-nav-analisis-pelanggan"
+                >Analisis Pelanggan</a
+              >
+            </div>
+          </div>
           <a href="#" id="desktop-nav-logout" class="logout-btn"
             >Logout <i class="fas fa-sign-out-alt"></i
           ></a>
@@ -56,7 +65,15 @@
       <div class="mobile-menu" id="mobile-menu">
         <a href="#" id="mobile-nav-dashboard" class="active">Dashboard</a>
         <a href="#" id="mobile-nav-laporan">Laporan Transaksi</a>
-        <a href="#" id="mobile-nav-analisis">Analisis</a>
+        <div class="nav-dropdown">
+          <a href="#" class="disabled">Analisis ▼</a>
+          <div class="dropdown-content">
+            <a href="#" id="mobile-nav-analisis-layanan">Analisis Layanan</a>
+            <a href="#" id="mobile-nav-analisis-pelanggan"
+              >Analisis Pelanggan</a
+            >
+          </div>
+        </div>
         <a href="#" id="mobile-nav-logout" class="logout-btn"
           >Logout <i class="fas fa-sign-out-alt"></i
         ></a>

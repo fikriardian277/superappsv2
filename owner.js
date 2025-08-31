@@ -1,6 +1,7 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxNKw7TocQBlrNpZoPAilWsLOlcKAyR7OxZ_3FIw6jacV3TaEkLcmy5tycoYUZmJusY-w/exec";
+  "https://script.google.com/macros/s/AKfycbxNMpqQ0aECq6l2jnRXXREEuJdFz9nC3CkEYMziLdudnJhM8BTFVa_llf35xIfyXjTnAg/exec";
 
+let dataLaporanSaatIni = [];
 // --- Event Listener Utama ---
 document.addEventListener("DOMContentLoaded", () => {
   // Cek dulu "saku" (localStorage)
@@ -59,10 +60,20 @@ async function handleOwnerLogin(e) {
   }
 }
 
+let daftarCabang = [];
 function initDashboard() {
   setupNavigation(); // Pasang semua listener navigasi
   renderOwnerDashboard(); // Tampilkan halaman dashboard sebagai default
+  fetch(`${API_URL}?action=getBranchList`)
+    .then((res) => res.json())
+    .then((data) => {
+      daftarCabang = data; // Simpan ke variabel global
+      renderOwnerDashboard(); // Baru render dashboard setelah daftar cabang ada
+    })
+    .catch((err) => console.error("Gagal memuat daftar cabang:", err));
 }
+
+// GANTI SELURUH FUNGSI setupNavigation ANDA DENGAN INI
 
 function setupNavigation() {
   // Tombol Hamburger & Overlay
@@ -81,15 +92,18 @@ function setupNavigation() {
     menuOverlay.addEventListener("click", toggleMenu);
   }
 
-  // Penanganan klik link navigasi (Desktop & Mobile)
+  // Fungsi bantuan untuk menangani klik link navigasi
   const handleNavClick = (e, renderFunction) => {
     e.preventDefault();
     renderFunction();
     if (document.body.classList.contains("menu-open")) {
-      toggleMenu(); // Tutup menu jika sedang terbuka (untuk mobile)
+      toggleMenu(); // Otomatis tutup menu jika di HP
     }
   };
 
+  // --- PASANG SEMUA EVENT LISTENER DI SINI ---
+
+  // Dashboard
   document
     .getElementById("desktop-nav-dashboard")
     ?.addEventListener("click", (e) => handleNavClick(e, renderOwnerDashboard));
@@ -97,6 +111,7 @@ function setupNavigation() {
     .getElementById("mobile-nav-dashboard")
     ?.addEventListener("click", (e) => handleNavClick(e, renderOwnerDashboard));
 
+  // Laporan Transaksi
   document
     .getElementById("desktop-nav-laporan")
     ?.addEventListener("click", (e) =>
@@ -107,28 +122,30 @@ function setupNavigation() {
     ?.addEventListener("click", (e) =>
       handleNavClick(e, renderLaporanTransaksi)
     );
+
+  // Analisis Layanan (INI YANG BARU DITAMBAHKAN)
   document
-    .getElementById("desktop-nav-analisis")
+    .getElementById("desktop-nav-analisis-layanan")
     ?.addEventListener("click", (e) =>
       handleNavClick(e, renderAnalisisLayanan)
     );
   document
-    .getElementById("mobile-nav-analisis")
+    .getElementById("mobile-nav-analisis-layanan")
     ?.addEventListener("click", (e) =>
       handleNavClick(e, renderAnalisisLayanan)
     );
+
+  // Analisis Pelanggan
   document
-    .getElementById("desktop-nav-logout")
-    ?.addEventListener("click", (e) => {
-      e.preventDefault();
-      handleLogout();
-    });
+    .getElementById("desktop-nav-analisis-pelanggan")
+    ?.addEventListener("click", (e) =>
+      handleNavClick(e, renderAnalisisPelanggan)
+    );
   document
-    .getElementById("mobile-nav-logout")
-    ?.addEventListener("click", (e) => {
-      e.preventDefault();
-      handleLogout();
-    });
+    .getElementById("mobile-nav-analisis-pelanggan")
+    ?.addEventListener("click", (e) =>
+      handleNavClick(e, renderAnalisisPelanggan)
+    );
 }
 
 async function renderOwnerDashboard() {
@@ -176,6 +193,10 @@ async function renderOwnerDashboard() {
 function renderRevenueChart(dailyData) {
   const ctx = document.getElementById("revenueChart");
   if (!ctx) return;
+  const existingChart = Chart.getChart(ctx);
+  if (existingChart) {
+    existingChart.destroy(); // Jika ada, hancurkan grafik lama
+  }
   const labels = Object.keys(dailyData).sort();
   const chartData = labels.map((label) => dailyData[label]);
 
@@ -201,6 +222,10 @@ function renderRevenueChart(dailyData) {
 function renderServiceChart(serviceData) {
   const ctx = document.getElementById("serviceChart");
   if (!ctx) return;
+  const existingChart = Chart.getChart(ctx);
+  if (existingChart) {
+    existingChart.destroy(); // Jika ada, hancurkan grafik lama
+  }
   const labels = Object.keys(serviceData);
   const chartData = Object.values(serviceData);
 
@@ -232,26 +257,26 @@ function renderServiceChart(serviceData) {
   });
 }
 
-// TAMBAHKAN FUNGSI-FUNGSI BARU INI DI owner.js
+// GANTI SELURUH FUNGSI renderLaporanTransaksi ANDA DENGAN INI
 
-// Fungsi untuk membuat halaman Laporan Transaksi
 function renderLaporanTransaksi() {
   setActiveNav("desktop-nav-laporan", "mobile-nav-laporan");
   const mainContainer = document.querySelector("#dashboard-section main");
+  if (!mainContainer) return;
 
-  const html = `
-  <div class="page-header">
-            <h2> Laporan Transaksi</h2>
-            
+  mainContainer.innerHTML = `
+        <div class="page-header">
+            <h2><i class="fas fa-file-invoice-dollar"></i> Laporan Transaksi</h2>
+
         </div>
         <div class="filter-bar">
+            <div><label for="tgl-mulai">Dari Tanggal</label><input type="date" id="tgl-mulai"></div>
+            <div><label for="tgl-akhir">Sampai Tanggal</label><input type="date" id="tgl-akhir"></div>
             <div>
-                <label for="tgl-mulai">Dari Tanggal</label>
-                <input type="date" id="tgl-mulai">
-            </div>
-            <div>
-                <label for="tgl-akhir">Sampai Tanggal</label>
-                <input type="date" id="tgl-akhir">
+                <label for="filter-cabang">Cabang</label>
+                <select id="filter-cabang">
+                    <option value="SEMUA">Semua Cabang</option>
+                </select>
             </div>
             <div>
                 <label for="filter-status">Status</label>
@@ -264,18 +289,15 @@ function renderLaporanTransaksi() {
                 </select>
             </div>
             <button id="btn-terapkan-filter" class="btn-primary">Terapkan</button>
+            <button id="btn-ekspor-excel" class="btn-secondary">
+            <i class="fas fa-file-excel"></i> Ekspor
+        </button>
         </div>
         <div class="table-container">
             <table id="laporan-transaksi-table">
                 <thead>
                     <tr>
-                        <th>ID Transaksi</th>
-                        <th>Tanggal</th>
-                        <th>Pelanggan</th>
-                        <th>Total</th>
-                        <th>Status Bayar</th>
-                        <th>Status Proses</th>
-                        <th>Cabang</th>
+                        <th>ID Transaksi</th><th>Tanggal</th><th>Pelanggan</th><th>Total</th><th>Status Bayar</th><th>Status Proses</th><th>Cabang</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -284,21 +306,44 @@ function renderLaporanTransaksi() {
             </table>
         </div>
     `;
-  mainContainer.innerHTML = html;
 
-  // Set tanggal default (misal: bulan ini)
-  const today = new Date();
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-  document.getElementById("tgl-mulai").valueAsDate = firstDay;
-  document.getElementById("tgl-akhir").valueAsDate = today;
+  setTimeout(() => {
+    // Set tanggal default
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    document.getElementById("tgl-mulai").valueAsDate = firstDay;
+    document.getElementById("tgl-akhir").valueAsDate = today;
 
-  // Tambahkan event listener ke tombol
-  document
-    .getElementById("btn-terapkan-filter")
-    .addEventListener("click", loadLaporanData);
+    // Isi dropdown cabang
+    const selectCabang = document.getElementById("filter-cabang");
+    if (selectCabang && daftarCabang) {
+      daftarCabang.forEach((cabang) => {
+        if (cabang.ID_Cabang !== "ALL") {
+          selectCabang.innerHTML += `<option value="${cabang.ID_Cabang}">${cabang.Nama_Cabang}</option>`;
+        }
+      });
+    }
 
-  // Langsung muat data saat halaman pertama kali dibuka
-  loadLaporanData();
+    // Tambahkan event listener ke tombol
+    document
+      .getElementById("btn-terapkan-filter")
+      .addEventListener("click", loadLaporanData);
+    document
+      .getElementById("btn-ekspor-excel")
+      .addEventListener("click", () => {
+        const tglMulai = document.getElementById("tgl-mulai").value;
+        const tglAkhir = document.getElementById("tgl-akhir").value;
+        exportToCsv(
+          dataLaporanSaatIni,
+          `Laporan Transaksi ${tglMulai} - ${tglAkhir}.csv`
+        );
+      });
+
+    // Langsung muat data saat halaman pertama kali dibuka
+    loadLaporanData(); // <-- PINDAHKAN KE SINI, DI DALAM setTimeout
+  }, 0);
+
+  // HAPUS DARI SINI
 }
 
 // Fungsi untuk memuat data berdasarkan filter
@@ -310,7 +355,7 @@ async function loadLaporanData() {
     tanggalMulai: document.getElementById("tgl-mulai").value,
     tanggalAkhir: document.getElementById("tgl-akhir").value,
     status: document.getElementById("filter-status").value,
-    idCabang: "SEMUA", // Nanti bisa kita buat dinamis
+    idCabang: document.getElementById("filter-cabang").value,
   };
   console.log("Filter yang dikirim dari browser:", filters);
   try {
@@ -329,6 +374,7 @@ async function loadLaporanData() {
 
 // Fungsi untuk mengisi tabel dengan data
 function populateLaporanTable(data) {
+  dataLaporanSaatIni = data;
   const tableBody = document.querySelector("#laporan-transaksi-table tbody");
   tableBody.innerHTML = ""; // Kosongkan
 
@@ -438,7 +484,8 @@ function renderAnalisisLayanan() {
   // 1. Buat kerangka HTML yang LENGKAP, termasuk isi dari .filter-bar
   mainContainer.innerHTML = `
       <div class="page-header">
-            <h2> Analisis Layanan</h2>
+            <h2><i class="fas fa-tools"></i> Analisis Layanan</h2>
+
             
         </div>
         <div class="filter-bar">
@@ -484,6 +531,15 @@ function renderAnalisisLayanan() {
         </div>
     `;
 
+  const selectCabang = document.getElementById("filter-cabang");
+  if (selectCabang && daftarCabang) {
+    daftarCabang.forEach((cabang) => {
+      // Jangan tampilkan 'ALL' sebagai pilihan cabang
+      if (cabang.ID_Cabang !== "ALL") {
+        selectCabang.innerHTML += `<option value="${cabang.ID_Cabang}">${cabang.Nama_Cabang}</option>`;
+      }
+    });
+  }
   // 2. Set tanggal default setelah HTML-nya dijamin ada
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -607,6 +663,401 @@ function renderLayananChart(data) {
       plugins: { legend: { display: false } },
     },
   });
+}
+
+// FUNGSI BARU UNTUK EKSPOR KE CSV
+function exportToCsv(data, filename) {
+  if (data.length === 0) {
+    alert("Tidak ada data untuk diekspor.");
+    return;
+  }
+
+  // 1. Buat Header CSV dari nama kolom objek pertama
+  const headers = Object.keys(data[0]);
+  const csvRows = [headers.join(";")]; // ['ID_Transaksi,Nama_Pelanggan,...']
+
+  // 2. Buat baris data
+  for (const row of data) {
+    const values = headers.map((header) => {
+      let value = row[header];
+      // Tangani koma di dalam data dengan membungkusnya dalam tanda kutip
+      if (typeof value === "string" && value.includes(",")) {
+        value = `"${value}"`;
+      }
+      return value;
+    });
+    csvRows.push(values.join(";"));
+  }
+
+  // 3. Gabungkan semua baris menjadi satu teks besar
+  const csvString = csvRows.join("\n");
+
+  // 4. Buat file dan picu download
+  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}
+
+// GANTI FUNGSI renderAnalisisPelanggan ANDA DENGAN INI
+
+// GANTI SELURUH FUNGSI INI DI owner.js
+
+function renderAnalisisPelanggan() {
+  console.log("1. Memulai renderAnalisisPelanggan...");
+  setActiveNav(
+    "desktop-nav-analisis-pelanggan",
+    "mobile-nav-analisis-pelanggan"
+  );
+
+  const mainContainer = document.querySelector("#dashboard-section main");
+  console.log("2. Mencari '#dashboard-section main':", mainContainer); // <-- INI LOG PALING PENTING
+
+  if (!mainContainer) {
+    console.error(
+      "3. GAGAL: Kontainer utama tidak ditemukan! Proses render berhenti."
+    );
+    return; // Hentikan fungsi
+  }
+
+  console.log("3. SUKSES: Kontainer ditemukan. Mulai menggambar HTML...");
+  mainContainer.innerHTML = `
+        <div class="page-header">
+            <h2><i class="fas fa-users"></i> Analisis Pelanggan</h2>
+            
+        </div>
+        <div class="filter-bar">
+            <div><label for="tgl-mulai">Dari Tanggal</label><input type="date" id="tgl-mulai"></div>
+            <div><label for="tgl-akhir">Sampai Tanggal</label><input type="date" id="tgl-akhir"></div>
+            <div>
+                <label for="filter-cabang">Cabang</label>
+                <select id="filter-cabang"><option value="SEMUA">Semua Cabang</option></select>
+            </div>
+            <button id="btn-terapkan-filter-pelanggan" class="btn-primary">Terapkan</button>
+        </div>
+        <div class="segment-tabs">
+            <button class="segment-btn active" data-segment="top-spender">Top Spender</button>
+            <button class="segment-btn" data-segment="most-frequent">Paling Sering Datang</button>
+            <button class="segment-btn" data-segment="new-customers">Pelanggan Baru</button>
+            <button class="segment-btn" data-segment="lost-customers">Pelanggan Hilang</button>
+        </div>
+        <div class="table-container">
+            <h3 id="table-title">Memuat...</h3>
+            <table id="pelanggan-summary-table">
+                <thead id="pelanggan-table-head"></thead>
+                <tbody id="pelanggan-table-body">
+                    <tr><td colspan="4">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+  console.log("4. HTML untuk Analisis Pelanggan selesai digambar.");
+
+  const selectCabang = document.getElementById("filter-cabang");
+  if (selectCabang && daftarCabang) {
+    daftarCabang.forEach((cabang) => {
+      // Jangan tampilkan 'ALL' sebagai pilihan cabang
+      if (cabang.ID_Cabang !== "ALL") {
+        selectCabang.innerHTML += `<option value="${cabang.ID_Cabang}">${cabang.Nama_Cabang}</option>`;
+      }
+    });
+  }
+  setTimeout(() => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    document.getElementById("tgl-mulai").valueAsDate = firstDay;
+    document.getElementById("tgl-akhir").valueAsDate = today;
+
+    document
+      .getElementById("btn-terapkan-filter-pelanggan")
+      .addEventListener("click", loadCustomerData);
+    document.querySelectorAll(".segment-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        const segment = button.dataset.segment;
+        displayPelangganSegment(segment);
+      });
+    });
+
+    loadCustomerData();
+  }, 0);
+}
+
+// GANTI FUNGSI loadCustomerData ANDA
+// 1. Fungsi untuk Laporan Transaksi
+async function loadLaporanData() {
+  const tableBody = document.querySelector("#laporan-transaksi-table tbody");
+  if (!tableBody) return;
+  tableBody.innerHTML = `<tr><td colspan="7">Memuat data...</td></tr>`;
+
+  const filters = {
+    tanggalMulai: document.getElementById("tgl-mulai").value,
+    tanggalAkhir: document.getElementById("tgl-akhir").value,
+    status: document.getElementById("filter-status").value,
+    idCabang: document.getElementById("filter-cabang").value,
+  };
+
+  try {
+    const response = await fetch(
+      `${API_URL}?action=getFilteredTransactions&filters=${encodeURIComponent(
+        JSON.stringify(filters)
+      )}`
+    );
+    const data = await response.json();
+    populateLaporanTable(data);
+  } catch (error) {
+    console.error("Gagal memuat laporan:", error);
+    tableBody.innerHTML = `<tr><td colspan="7">Gagal memuat data.</td></tr>`;
+  }
+}
+
+// 2. Fungsi untuk Analisis Pelanggan
+async function loadCustomerData() {
+  const tableBody = document.querySelector("#pelanggan-summary-table tbody");
+  if (!tableBody) return;
+  tableBody.innerHTML = '<tr><td colspan="4">Memuat data...</td></tr>';
+
+  const filters = {
+    tanggalMulai: document.getElementById("tgl-mulai").value,
+    tanggalAkhir: document.getElementById("tgl-akhir").value,
+    idCabang: document.getElementById("filter-cabang").value,
+  };
+
+  try {
+    const response = await fetch(
+      `${API_URL}?action=getCustomerAnalysis&filters=${encodeURIComponent(
+        JSON.stringify(filters)
+      )}`
+    );
+    dataAnalisisPelanggan = await response.json();
+
+    const activeSegment =
+      document.querySelector(".segment-btn.active")?.dataset.segment ||
+      "top-spender";
+    displayPelangganSegment(activeSegment);
+  } catch (error) {
+    console.error("Gagal memuat analisis pelanggan:", error);
+    tableBody.innerHTML = '<tr><td colspan="4">Gagal memuat data.</td></tr>';
+  }
+}
+
+// GANTI FUNGSI displayPelangganSegment LAMA ANDA DENGAN INI
+function displayPelangganSegment(segment) {
+  document.querySelectorAll(".segment-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.segment === segment);
+  });
+
+  const tableHead = document.querySelector("#pelanggan-table-head");
+  const tableBody = document.querySelector("#pelanggan-table-body");
+  const tableTitle = document.getElementById("table-title");
+  tableBody.innerHTML = "";
+
+  let processedData = [];
+  let tableHeaders = `<th>Peringkat</th><th>Nama Pelanggan</th><th>Jumlah Kunjungan</th><th>Total Belanja</th>`; // Default headers
+
+  const now = new Date();
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(now.getDate() - 90);
+
+  switch (segment) {
+    case "top-spender":
+      tableTitle.textContent = "Top Pelanggan (Berdasarkan Total Belanja)";
+      processedData = [...dataAnalisisPelanggan].sort(
+        (a, b) => b.totalSpending - a.totalSpending
+      );
+      break;
+
+    case "most-frequent":
+      tableTitle.textContent = "Top Pelanggan (Berdasarkan Jumlah Kunjungan)";
+      processedData = [...dataAnalisisPelanggan].sort(
+        (a, b) => b.visitCount - a.visitCount
+      );
+      break;
+
+    case "new-customers":
+      tableTitle.textContent = "Pelanggan Baru (Berdasarkan Tanggal Daftar)";
+      tableHeaders = `<th>Nama Pelanggan</th><th>Tanggal Daftar</th><th>Jumlah Kunjungan</th><th>Total Belanja</th>`;
+      processedData = dataAnalisisPelanggan
+        .filter(
+          (c) =>
+            c.tanggalDaftar &&
+            new Date(c.tanggalDaftar) >=
+              new Date(document.getElementById("tgl-mulai").value)
+        )
+        .sort((a, b) => new Date(b.tanggalDaftar) - new Date(a.tanggalDaftar));
+      break;
+
+    case "lost-customers":
+      tableTitle.textContent = 'Pelanggan "Hilang" (Tidak Transaksi > 90 Hari)';
+      tableHeaders = `<th>Nama Pelanggan</th><th>Kunjungan Terakhir</th><th>Total Belanja</th>`;
+      processedData = dataAnalisisPelanggan
+        .filter((c) => c.lastVisit && new Date(c.lastVisit) < ninetyDaysAgo)
+        .sort((a, b) => new Date(a.lastVisit) - new Date(b.lastVisit));
+      break;
+  }
+
+  tableHead.innerHTML = `<tr>${tableHeaders}</tr>`;
+
+  if (processedData.length === 0) {
+    tableBody.innerHTML = `<tr><td colspan="4">Tidak ada data untuk segmen ini.</td></tr>`;
+    return;
+  }
+
+  processedData.slice(0, 20).forEach((cust, index) => {
+    let rowHtml = "";
+    if (segment === "new-customers") {
+      rowHtml = `
+                <td><a href="#" onclick="renderCustomerDetails('${cust.id}')">${
+        cust.nama
+      }</a></td>
+                <td>${new Date(cust.tanggalDaftar).toLocaleDateString(
+                  "id-ID"
+                )}</td>
+                <td>${cust.visitCount} kali</td>
+                <td>${formatRupiah(cust.totalSpending)}</td>
+            `;
+    } else if (segment === "lost-customers") {
+      rowHtml = `
+                <td><a href="#" onclick="renderCustomerDetails('${cust.id}')">${
+        cust.nama
+      }</a></td>
+                <td>${new Date(cust.lastVisit).toLocaleDateString("id-ID")}</td>
+                <td>${formatRupiah(cust.totalSpending)}</td>
+            `;
+    } else {
+      rowHtml = `
+                <td>${index + 1}</td>
+                <td><a href="#" onclick="renderCustomerDetails('${cust.id}')">${
+        cust.nama
+      }</a></td>
+                <td>${cust.visitCount} kali</td>
+                <td>${formatRupiah(cust.totalSpending)}</td>
+            `;
+    }
+    tableBody.innerHTML += `<tr>${rowHtml}</tr>`;
+  });
+}
+
+// TAMBAHKAN FUNGSI BARU INI DI owner.js
+
+// GANTI SELURUH FUNGSI renderCustomerDetails ANDA DENGAN INI
+
+async function renderCustomerDetails(customerId) {
+  const mainContainer = document.querySelector("#dashboard-section main");
+  if (!mainContainer) return;
+
+  // Tampilkan kerangka loading dulu
+  mainContainer.innerHTML = `
+        <div class="page-header">
+            <h2><i class="fas fa-user-tag"></i> Detail Pelanggan</h2>
+            <p>Memuat riwayat untuk ID: ${customerId}...</p>
+        </div>
+        <div class="loading-placeholder">Memuat data pelanggan...</div>
+    `;
+
+  try {
+    // 1. Ambil data detail dari server
+    const response = await fetch(
+      `${API_URL}?action=getCustomerDetails&id=${customerId}`
+    );
+    const data = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    const profile = data.profile;
+    const history = data.history;
+
+    // 2. Siapkan HTML untuk kartu profil
+    const profileHtml = `
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h3>Status Member</h3>
+                    <p class="${
+                      profile.Status_Member === "Aktif" ? "status-aktif" : ""
+                    }">${profile.Status_Member}</p>
+                </div>
+                <div class="profile-card">
+                    <h3>Total Poin</h3>
+                    <p>${profile.Total_Poin || 0}</p>
+                </div>
+                <div class="profile-card">
+                    <h3>Total Belanja</h3>
+                    <p>${formatRupiah(
+                      history.reduce(
+                        (sum, trx) => sum + Number(trx.Total_Harga),
+                        0
+                      )
+                    )}</p>
+                </div>
+                <div class="profile-card">
+                    <h3>Jumlah Kunjungan</h3>
+                    <p>${history.length} kali</p>
+                </div>
+            </div>
+        `;
+
+    // 3. Siapkan HTML untuk tabel riwayat transaksi
+    const historyHtml = history
+      .map((trx) => {
+        const statusClass =
+          trx.Status?.toLowerCase().replace(/ /g, "-") || "default";
+        const tglMasuk = new Date(trx.Tanggal_Masuk).toLocaleDateString(
+          "id-ID",
+          { day: "2-digit", month: "short", year: "numeric" }
+        );
+        return `
+                <tr>
+                    <td>${trx.ID_Transaksi}</td>
+                    <td>${tglMasuk}</td>
+                    <td>Rp ${Number(trx.Total_Harga).toLocaleString(
+                      "id-ID"
+                    )}</td>
+                    <td><span class="status ${statusClass}">${
+          trx.Status
+        }</span></td>
+                    <td>${trx.ID_Cabang || "N/A"}</td>
+                </tr>
+            `;
+      })
+      .join("");
+
+    // 4. Gabungkan semua HTML dan render ke halaman
+    mainContainer.innerHTML = `
+            <div class="page-header">
+                <h2>${profile.Nama_Pelanggan}</h2>
+                <p>${profile.No_HP || "No HP tidak terdaftar"}</p>
+            </div>
+            ${profileHtml}
+            <div class="table-container">
+                <h3>Riwayat Transaksi</h3>
+                <table id="customer-history-table">
+                    <thead>
+                        <tr>
+                            <th>ID Transaksi</th>
+                            <th>Tanggal Masuk</th>
+                            <th>Total</th>
+                            <th>Status Proses</th>
+                            <th>Cabang</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${historyHtml}
+                    </tbody>
+                </table>
+            </div>
+        `;
+  } catch (error) {
+    console.error("Gagal memuat detail pelanggan:", error);
+    mainContainer.innerHTML = `<h1>Gagal memuat data.</h1><p>${error.message}</p>`;
+  }
 }
 
 function handleLogout() {

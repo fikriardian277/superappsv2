@@ -1,0 +1,514 @@
+/* owner-modern.css
+   Desktop-first: modern, flat pastel (white base + blue accent)
+   - Focus: desktop styling only (no mobile media queries here)
+   - Works with your existing HTML/JS classes (no change HTML required)
+*/
+
+/* ----------------------------
+   Tokens & Foundation
+   ---------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --primary: #2563eb; /* main accent */
+  --accent: #7c9cf5; /* soft accent */
+  --bg: #f8fafc; /* page background */
+  --card: #ffffff; /* card background */
+  --muted: #6b7280; /* secondary text */
+  --text: #0f1724; /* main text */
+  --border: #e6e9ef; /* soft border */
+  --radius-lg: 14px;
+  --radius-md: 8px;
+  --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 4px 12px rgba(2, 6, 23, 0.04);
+  --glass: rgba(255, 255, 255, 0.6);
+  --nav-height: 64px;
+}
+
+/* ================================== */
+/* RESET + BASE STYLE                 */
+/* ================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  font-family: "Inter", sans-serif;
+  background: #f9fafb;
+  color: #111827;
+  height: 100%;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px; /* ada ruang kosong kiri-kanan */
+}
+
+/* ================================== */
+/* NAVBAR                             */
+/* ================================== */
+.owner-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 32px; /* lebih kecil, lebih lega */
+  height: 56px; /* lebih ramping dari sebelumnya */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.owner-navbar .nav-brand {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.owner-navbar .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* ada jarak antar link */
+}
+
+.owner-navbar .nav-links a {
+  font-size: 14px;
+  color: #374151;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.owner-navbar .nav-links a:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.owner-navbar .nav-links a.active {
+  background: #2563eb;
+  color: white;
+}
+
+.owner-navbar .logout-btn {
+  color: #dc2626;
+}
+
+.hamburger-btn {
+  display: none; /* sementara disembunyiin di desktop */
+}
+
+/* logout visual */
+.logout-btn {
+  background: linear-gradient(180deg, #fee2e2, #feecec);
+  color: #9b0713;
+  border: 1px solid rgba(239, 68, 68, 0.08);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.logout-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* ----------------------------
+   Page Header
+   ---------------------------- */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.page-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+.page-header p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ----------------------------
+   Summary Cards (KPI)
+   ---------------------------- */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin: 18px 0 24px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(15, 23, 36, 0.03);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+}
+
+/* If card uses h3 + p (your JS uses this) */
+.card h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: none;
+}
+.card p {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* icon area inside card (if JS injects) */
+.card .card-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
+}
+.card .meta {
+  display: flex;
+  flex-direction: column;
+}
+
+/* preset colors for potential badges/icons */
+.icon-primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+.icon-success {
+  background: linear-gradient(135deg, #16a34a, #34d399);
+}
+.icon-warning {
+  background: linear-gradient(135deg, #f59e0b, #facc15);
+  color: #111;
+}
+.icon-info {
+  background: linear-gradient(135deg, #06b6d4, #7dd3fc);
+}
+
+/* ----------------------------
+   Chart Grid & Cards
+   ---------------------------- */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.chart-card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 1px solid rgba(15, 23, 36, 0.03);
+  box-shadow: var(--shadow-sm);
+}
+.chart-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 700;
+}
+.chart-wrapper {
+  height: 260px; /* chart.js will fill */
+  position: relative;
+}
+
+/* ----------------------------
+   Filter Bar
+   ---------------------------- */
+.filter-bar {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  background: var(--card);
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.filter-bar > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 150px;
+}
+.filter-bar label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.filter-bar input[type="date"],
+.filter-bar select,
+.filter-bar input[type="text"] {
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text);
+  background: transparent;
+}
+.filter-bar .btn-primary,
+.filter-bar .btn-secondary {
+  height: 40px;
+  align-self: flex-end;
+}
+.btn-primary {
+  background: linear-gradient(180deg, var(--primary), #1f57d8);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+}
+.btn-secondary {
+  background: white;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* ----------------------------
+   Tables
+   ---------------------------- */
+.table-container {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(15, 23, 36, 0.03);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.table-container h3 {
+  margin: 0;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* generic table styles (works for #recent-table, #laporan-transaksi-table, etc.) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+thead th {
+  text-align: left;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 12px 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(246, 248, 250, 0.8),
+    rgba(246, 248, 250, 0.95)
+  );
+  border-bottom: 1px solid var(--border);
+}
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(15, 23, 36, 0.03);
+  color: var(--text);
+}
+tbody tr:hover {
+  background: rgba(37, 99, 235, 0.03);
+}
+
+/* smaller table in some cards */
+#recent-table td,
+#recent-table th {
+  font-size: 13px;
+}
+
+/* force nice column alignment for certain columns (based on their order in your HTML) */
+table td[data-label] {
+  display: table-cell;
+}
+
+/* ----------------------------
+   Status badges
+   JS will add classes like 'status diterima' or 'status proses-cuci'
+   ---------------------------- */
+.status {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  color: #fff;
+}
+.status.diterima {
+  background: linear-gradient(90deg, #2563eb, #7c9cf5);
+} /* blue */
+.status.selesai {
+  background: linear-gradient(90deg, #16a34a, #34d399);
+} /* green */
+.status["proses-cuci"],
+.status.proses-cuci {
+  background: linear-gradient(90deg, #f59e0b, #facc15);
+  color: #111;
+} /* warning */
+.status.siap-diambil {
+  background: linear-gradient(90deg, #06b6d4, #7dd3fc);
+  color: #fff;
+}
+.status.default {
+  background: var(--muted);
+}
+
+/* ----------------------------
+   Segment Tabs (Analisis Pelanggan)
+   ---------------------------- */
+.segment-tabs {
+  display: inline-flex;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(15, 23, 36, 0.03);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.segment-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.segment-btn.active {
+  background: var(--card);
+  color: var(--primary);
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.06);
+}
+
+/* ----------------------------
+   Profile / Detail Cards (Customer Detail page)
+   ---------------------------- */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.profile-card {
+  background: var(--card);
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(15, 23, 36, 0.03);
+  box-shadow: var(--shadow-sm);
+}
+.profile-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.profile-card p {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+.profile-card p.status-aktif {
+  color: #16a34a;
+}
+
+/* ----------------------------
+   Login (desktop card)
+   ---------------------------- */
+#login-section {
+  min-height: calc(100vh - var(--nav-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+.login-container {
+  max-width: 420px;
+  background: var(--card);
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.login-container .login-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+  display: block;
+  object-fit: contain;
+}
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 100%;
+  height: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+/* ----------------------------
+   Utilities
+   ---------------------------- */
+.kv {
+  font-size: 13px;
+  color: var(--muted);
+}
+.small {
+  font-size: 12px;
+  color: var(--muted);
+}
+.center {
+  text-align: center;
+}
+
+/* ----------------------------
+   Notes & Testing tips
+   ---------------------------- */
+/* This stylesheet is desktop-first. We'll add mobile media queries
+   later (single breakpoint set) to adapt to tablet/phone.
+*/
