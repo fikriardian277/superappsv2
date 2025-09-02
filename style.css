@@ -1333,8 +1333,8 @@ fieldset .full-width {
     left: 0;
     top: 0;
     width: 58mm;
-    margin: 0;
-    padding: 3mm;
+    margin: 0 !important;
+    padding: 0 !important;
     font-family: "monospace", "Courier New";
     color: #000;
     font-size: 9pt;
