@@ -1,5 +1,5 @@
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxNMpqQ0aECq6l2jnRXXREEuJdFz9nC3CkEYMziLdudnJhM8BTFVa_llf35xIfyXjTnAg/exec";
+  "https://script.google.com/macros/s/AKfycbwQKdKGEYgg3o-9Nes9FlX5fxiSmvyErlDNYza49-a99g2JelAdEnzpHRWtZUptpUXDfg/exec";
 
 let dataLaporanSaatIni = [];
 // --- Event Listener Utama ---
@@ -146,6 +146,18 @@ function setupNavigation() {
     ?.addEventListener("click", (e) =>
       handleNavClick(e, renderAnalisisPelanggan)
     );
+  document
+    .getElementById("desktop-nav-logout")
+    ?.addEventListener("click", (e) => {
+      e.preventDefault();
+      handleLogout();
+    });
+  document
+    .getElementById("mobile-nav-logout")
+    ?.addEventListener("click", (e) => {
+      e.preventDefault();
+      handleLogout();
+    });
 }
 
 async function renderOwnerDashboard() {

@@ -2,7 +2,7 @@
 // PENGATURAN - WAJIB DIISI
 // =================================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxNKw7TocQBlrNpZoPAilWsLOlcKAyR7OxZ_3FIw6jacV3TaEkLcmy5tycoYUZmJusY-w/exec";
+  "https://script.google.com/macros/s/AKfycbwQKdKGEYgg3o-9Nes9FlX5fxiSmvyErlDNYza49-a99g2JelAdEnzpHRWtZUptpUXDfg/exec";
 
 const ATURAN_MINIMAL_KG = {
   "Cuci Setrika": 1,
@@ -261,19 +261,28 @@ function renderFormKasir(pelanggan = null) {
         </div>
       </fieldset>
 
-      <fieldset class="fieldset-akhir">
+     <fieldset class="fieldset-akhir">
   <div class="form-group">
     <label for="catatanOrder">Catatan (Opsional)</label>
     <textarea id="catatanOrder" rows="3"></textarea>
   </div>
   <div class="form-group">
-    <label>Status Pembayaran</label>
-    <div class="radio-group-container">
-      <input type="radio" id="statusBelumLunas" name="statusBayar" value="Belum Lunas" checked>
-      <label for="statusBelumLunas">Belum Lunas</label>
-      <input type="radio" id="statusLunas" name="statusBayar" value="Lunas">
-      <label for="statusLunas">Lunas</label>
+    <label for="statusBayar">Status Pembayaran</label> <select id="statusBayar" required>
+        <option value="Belum Lunas">Belum Lunas</option>
+        <option value="Lunas">Lunas</option>
+    </select>
+
+    <div id="metode-pembayaran-wrapper" class="hidden" style="margin-top: 16px;">
+        <label>Metode Pembayaran</label>
+        <div class="radio-group-container">
+            <input type="radio" id="metode-cash" name="metodeBayar" value="Cash" checked>
+            <label for="metode-cash" class="radio-button">Cash</label>
+
+            <input type="radio" id="metode-qris" name="metodeBayar" value="QRIS">
+            <label for="metode-qris" class="radio-button">QRIS</label>
+        </div>
     </div>
+
   </div>
 </fieldset>
       <div id="member-actions-container" class="full-width"></div>
@@ -461,9 +470,31 @@ function renderKanban(filter = "semua") {
   const kanbanContent = `
     <div class="kanban-main">
       <div class="kanban-container">
-        <div class="kanban-column" id="col-diterima"><div class="kanban-header"><h2>Diterima</h2><span class="card-count" id="count-diterima">0</span></div><div class="kanban-cards"></div></div>
-        <div class="kanban-column" id="col-proses-cuci"><div class="kanban-header"><h2>Proses Cuci</h2><span class="card-count" id="count-proses-cuci">0</span></div><div class="kanban-cards"></div></div>
-        <div class="kanban-column" id="col-siap-diambil"><div class="kanban-header"><h2>Siap Diambil</h2><span class="card-count" id="count-siap-diambil">0</span></div><div class="kanban-cards"></div></div>
+        <div class="kanban-column" id="col-diterima">
+          <div class="kanban-header">
+            <h2>Diterima</h2>
+            <span class="card-count" id="count-diterima">0</span>
+          </div>
+          <div class="kanban-cards"></div>
+        </div>
+
+        <div class="kanban-column" id="col-proses-cuci">
+          <div class="kanban-header">
+            <h2>Proses Cuci</h2>
+            <span class="card-count" id="count-proses-cuci">0</span>
+          </div>
+          <div class="kanban-cards"></div>
+        </div>
+
+        <div class="kanban-column" id="col-siap-diambil">
+          <div class="kanban-header">
+            <h2>Siap Diambil</h2>
+            <span class="card-count" id="count-siap-diambil">0</span>
+          </div>
+          <div class="kanban-cards"></div>
+        </div>
+
+        
       </div>
     </div>
   `;
@@ -900,31 +931,62 @@ function setupFormKasir(pelanggan = null) {
     }
   }
 
+  const statusBayarSelect = document.getElementById("statusBayar");
+  const metodePembayaranWrapper = document.getElementById(
+    "metode-pembayaran-wrapper"
+  );
+
+  if (statusBayarSelect && metodePembayaranWrapper) {
+    // Fungsi untuk menampilkan/menyembunyikan
+    const toggleMetodePembayaran = () => {
+      if (statusBayarSelect.value === "Lunas") {
+        metodePembayaranWrapper.classList.remove("hidden");
+      } else {
+        metodePembayaranWrapper.classList.add("hidden");
+      }
+    };
+
+    // Panggil saat pertama kali form dimuat
+    toggleMetodePembayaran();
+    // Panggil setiap kali nilainya berubah
+    statusBayarSelect.addEventListener("change", toggleMetodePembayaran);
+  }
+
   addItemButton.addEventListener("click", addItemToOrder);
   form.addEventListener("submit", handleFormSubmit);
   updateMemberSection(pelanggan);
 }
 
 // GANTI SELURUH FUNGSI handleFormSubmit DENGAN INI
+// GANTI SELURUH FUNGSI handleFormSubmit ANDA DENGAN INI
+
 async function handleFormSubmit(e) {
   e.preventDefault();
   const submitButton = document.getElementById("submitButton");
   submitButton.disabled = true;
   submitButton.innerHTML = 'Memproses... <div class="spinner-kecil"></div>';
-  console.log("Nilai idCabangAktif sebelum kirim:", idCabangAktif);
-  // UBAH BAGIAN 'catch' MENJADI 'async' dan gunakan 'showCustomModal'
+
   try {
     const nama = document.getElementById("namaPelanggan").value.trim();
     const noHpRaw = document.getElementById("noHp").value.trim();
-    if (daftarItemsPesanan.length === 0)
+    if (daftarItemsPesanan.length === 0) {
       throw new Error("Mohon tambahkan setidaknya satu item pesanan.");
-    if (!nama || !noHpRaw)
+    }
+    if (!nama || !noHpRaw) {
       throw new Error("Nama dan Nomor HP pelanggan wajib diisi.");
+    }
 
     const pelangganId = document.getElementById("idPelanggan").value;
     const pelangganData = daftarPelanggan.find(
       (p) => p.ID_Pelanggan === pelangganId
     );
+
+    // --- PERBAIKAN UTAMA DI SINI ---
+    const statusBayarValue = document.getElementById("statusBayar").value;
+    const metodePembayaranValue =
+      statusBayarValue === "Lunas"
+        ? document.querySelector('input[name="metodeBayar"]:checked').value
+        : ""; // Kosongkan jika belum lunas
 
     const payload = {
       idCabang: idCabangAktif,
@@ -941,8 +1003,8 @@ async function handleFormSubmit(e) {
         daftarItemsPesanan.find((item) => item.isDiscount)?.poinDitebus || 0,
       transaksiId: `SCLN-${String(Date.now()).slice(-6)}`,
       tanggal: new Date().toISOString(),
-      statusBayar: document.querySelector('input[name="statusBayar"]:checked')
-        .value,
+      statusBayar: statusBayarValue,
+      metodePembayaran: metodePembayaranValue, // Gunakan variabel yang sudah kita siapkan
       nama: nama,
       noHp: normalizePhoneNumber(noHpRaw),
       catatan: document.getElementById("catatanOrder").value.trim(),
@@ -953,7 +1015,6 @@ async function handleFormSubmit(e) {
     kirimDataLatarBelakang(payload);
     daftarItemsPesanan = [];
   } catch (error) {
-    // Tampilkan error menggunakan modal kustom
     console.error("Error saat submit form:", error);
     await showCustomModal({
       title: "Input Tidak Lengkap",
@@ -1418,6 +1479,29 @@ function updatePelangganList(filter = "") {
       : "<li>Tidak ada pelanggan ditemukan.</li>";
 }
 
+document.addEventListener("change", function (e) {
+  if (e.target.classList.contains("status-select")) {
+    const id = e.target.dataset.id;
+    const nama = e.target.dataset.nama;
+    const nohp = e.target.dataset.nohp;
+    const newStatus = e.target.value;
+
+    // Kalau status dipindah ke "Selesai"
+    if (newStatus === "Selesai") {
+      const trx = semuaTransaksi.find((t) => t.ID_Transaksi === id);
+
+      if (trx && trx.Status_Bayar !== "Lunas") {
+        // munculkan modal pembayaran
+        showPaymentModal(id, nama, nohp);
+        return; // jangan lanjut updateStatusTransaksi
+      }
+    }
+
+    // kalau status lain, update langsung
+    updateStatusTransaksi(id, newStatus, nohp, nama);
+  }
+});
+
 // GANTI SELURUH FUNGSI renderKanbanCards LAMA DENGAN VERSI FINAL INI
 function renderKanbanCards(filter = "semua") {
   const counts = { diterima: 0, "proses-cuci": 0, "siap-diambil": 0 };
@@ -1426,23 +1510,21 @@ function renderKanbanCards(filter = "semua") {
   // LANGKAH A: Kelompokkan semua item berdasarkan ID Transaksi yang sama
   const groupedTransactions = Object.values(
     semuaTransaksi.reduce((acc, trx) => {
-      if (trx.Status && trx.Status !== "Selesai") {
+      if (trx.Status) {
         if (!acc[trx.ID_Transaksi]) {
-          acc[trx.ID_Transaksi] = {
-            ...trx,
-            items: [],
-          };
+          acc[trx.ID_Transaksi] = { ...trx, items: [] };
         }
         acc[trx.ID_Transaksi].items.push({
           paket: trx.Paket,
           layanan: trx.Layanan,
         });
       }
+
       return acc;
     }, {})
   );
 
-  // LANGKAH B: Urutkan transaksi. Prioritas utama adalah paket ekspres.
+  // LANGKAH B: Urutkan transaksi
   groupedTransactions.sort((a, b) => {
     const prioritasA = a.items.some((item) =>
       String(item.paket).toLowerCase().includes("expres")
@@ -1450,11 +1532,10 @@ function renderKanbanCards(filter = "semua") {
     const prioritasB = b.items.some((item) =>
       String(item.paket).toLowerCase().includes("expres")
     );
-
     if (prioritasA && !prioritasB) return -1;
     if (!prioritasA && prioritasB) return 1;
-
-    return new Date(a.Tanggal_Masuk) - new Date(b.Tanggal_Masuk);
+    // Gunakan parseDMYDate untuk perbandingan yang aman
+    return parseDMYDate(b.Tanggal_Masuk) - parseDMYDate(a.Tanggal_Masuk);
   });
 
   let transaksiUntukDitampilkan = groupedTransactions;
@@ -1464,25 +1545,32 @@ function renderKanbanCards(filter = "semua") {
     );
   }
 
-  // LANGKAH C: Render setiap kartu dengan logika deadline
+  // LANGKAH C: Render setiap kartu
   transaksiUntukDitampilkan.forEach((trx) => {
     const card = document.createElement("div");
-    const tanggalMasuk = new Date(trx.Tanggal_Masuk);
+    const tanggalMasuk = parseDMYDate(trx.Tanggal_Masuk);
     const sekarang = new Date();
     const selisihJam = (sekarang - tanggalMasuk) / (1000 * 60 * 60);
 
     const deadlineTerpendek = Math.min(
       ...trx.items.map((item) => getDeadlineHours(item.paket))
     );
-
     const ambangBatasWaktu = deadlineTerpendek * 0.7;
     let waktuMepet = selisihJam > ambangBatasWaktu;
 
-    card.className = `kanban-card ${waktuMepet ? "mepet" : ""}`;
+    const statusBayar = (trx.Status_Bayar || "Belum Lunas").trim();
+    const statusBayarClass = statusBayar.toLowerCase().replace(/ /g, "-");
+    const isReadyToPay =
+      (trx.Status || "").trim().toLowerCase() === "selesai" &&
+      statusBayar.toLowerCase() !== "lunas";
 
     const itemsHtml = trx.items
-      .map((item) => `<span class="paket-label">${item.paket}</span>`)
+      .map(
+        (item) =>
+          `<span class="paket-label">${item.paket || item.layanan}</span>`
+      )
       .join(" ");
+
     const statusValues = ["Diterima", "Proses Cuci", "Siap Diambil", "Selesai"];
     const options = statusValues
       .map(
@@ -1492,43 +1580,86 @@ function renderKanbanCards(filter = "semua") {
           }>${status}</option>`
       )
       .join("");
-    const statusBayar = (trx.Status_Bayar || "Belum Lunas").trim();
-    const statusBayarClass = statusBayar.toLowerCase().replace(" ", "-");
 
+    card.className = `kanban-card ${waktuMepet ? "mepet" : ""}`;
     card.innerHTML = `
-      <div class="card-header">
-          <h4>${trx.Nama_Pelanggan}</h4>
-          ${
-            waktuMepet
-              ? '<span class="deadline-warning"><i class="fa-solid fa-fire"></i> Deadline</span>'
-              : ""
-          }
-      </div>
-      <p>${trx.ID_Transaksi}</p>
-      <div class="card-details">${itemsHtml}</div>
-      <div class="card-footer">
-        <span class="payment-status ${statusBayarClass}">${statusBayar}</span>
-        <select class="status-select" data-id="${
-          trx.ID_Transaksi
-        }" data-nohp="${trx.No_HP}" data-nama="${
-      trx.Nama_Pelanggan
-    }">${options}</select>
-      </div>`;
+    <div class="card-header">
+      <h4>${trx.Nama_Pelanggan}</h4>
+      ${
+        waktuMepet
+          ? `<span class="deadline-warning"><i class="fa-solid fa-fire"></i> Deadline</span>`
+          : ""
+      }
+    </div>
+    <p>${trx.ID_Transaksi}</p>
+    <div class="card-details">${itemsHtml}</div>
+    <div class="card-footer">
+      <span class="payment-status ${statusBayarClass}">${statusBayar}</span>
+      ${
+        isReadyToPay
+          ? `<button class="btn-pay" onclick="showPaymentModal('${
+              trx.ID_Transaksi
+            }', '${trx.Nama_Pelanggan.replace(/'/g, "\\'")}')">Bayar</button>`
+          : ""
+      }
+      <select class="status-select" 
+        data-id="${trx.ID_Transaksi}" 
+        data-nohp="${trx.No_HP}" 
+        data-nama="${trx.Nama_Pelanggan.replace(/'/g, "\\'")}"
+      >${options}</select>
+    </div>
+  `;
 
     const statusKey = trx.Status.replace(/ /g, "-").toLowerCase();
     const colId = `col-${statusKey}`;
     const columnContent = document.querySelector(`#${colId} .kanban-cards`);
     if (columnContent) {
       columnContent.appendChild(card);
-      if (counts.hasOwnProperty(statusKey)) counts[statusKey]++;
+      counts[statusKey]++;
     }
   });
 
+  // Update jumlah di header kolom
   document.getElementById("count-diterima").textContent = counts.diterima;
   document.getElementById("count-proses-cuci").textContent =
     counts["proses-cuci"];
   document.getElementById("count-siap-diambil").textContent =
     counts["siap-diambil"];
+}
+
+// GANTI SELURUH FUNGSI parseDMYDate LAMA ANDA DENGAN INI
+
+function parseDMYDate(dateValue) {
+  // Jika sudah dalam format Date, langsung kembalikan
+  if (dateValue instanceof Date) {
+    return dateValue;
+  }
+
+  if (typeof dateValue !== "string" || !dateValue) {
+    return null;
+  }
+
+  // BARU: Cek apakah ini format ISO (YYYY-MM-DD)
+  // Ini akan menangani tanggal dari transaksi yang baru dibuat
+  if (dateValue.includes("-") && dateValue.includes("T")) {
+    const date = new Date(dateValue);
+    return isNaN(date.getTime()) ? null : date;
+  }
+
+  // Jika bukan ISO, lanjutkan dengan logika lama untuk format DMY (DD/MM/YYYY)
+  // Ini akan menangani tanggal yang dimuat dari sheet
+  const parts = dateValue.split(/[\s/:]+/);
+  if (parts.length < 3) return null;
+
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1; // Bulan di JS dimulai dari 0
+  const year = parseInt(parts[2], 10);
+  const hours = parseInt(parts[3], 10) || 0;
+  const minutes = parseInt(parts[4], 10) || 0;
+  const seconds = parseInt(parts[5], 10) || 0;
+
+  const date = new Date(year, month, day, hours, minutes, seconds);
+  return isNaN(date.getTime()) ? null : date;
 }
 
 document.addEventListener("change", (e) => {
@@ -1895,6 +2026,8 @@ function getDeadlineHours(namaPaket) {
   return durasi;
 }
 
+// GANTI SELURUH FUNGSI showCustomModal ANDA DENGAN INI
+
 function showCustomModal(options) {
   // Ambil semua elemen modal
   const overlay = document.getElementById("modal-overlay");
@@ -1904,6 +2037,18 @@ function showCustomModal(options) {
   const inputEl = document.getElementById("modal-input");
   const confirmBtn = document.getElementById("modal-confirm");
   const cancelBtn = document.getElementById("modal-cancel");
+  console.log("3. showCustomModal dipanggil. Opsi:", options);
+  const radioContainer = document.getElementById("modal-radio-options");
+  if (!radioContainer) {
+    console.error(
+      "KRUSIAL: Elemen #modal-radio-options tidak ditemukan di HTML!"
+    );
+    return;
+  }
+
+  // Reset state
+  radioContainer.innerHTML = "";
+  inputEl.value = "";
 
   // Set konten modal dari options
   titleEl.textContent = options.title || "Konfirmasi";
@@ -1911,41 +2056,60 @@ function showCustomModal(options) {
   confirmBtn.textContent = options.confirmText || "Ya";
   cancelBtn.textContent = options.cancelText || "Batal";
 
-  // Tampilkan atau sembunyikan input field
-  if (options.input) {
-    inputEl.classList.remove("hidden");
-    inputEl.placeholder = options.placeholder || "";
-    inputEl.value = ""; // Kosongkan input setiap kali modal muncul
-  } else {
+  // --- LOGIKA UTAMA YANG DIPERBAIKI ---
+  if (options.isPaymentModal && options.options) {
+    // KASUS 1: MODAL PEMBAYARAN (RADIO BUTTON)
     inputEl.classList.add("hidden");
+    radioContainer.classList.remove("hidden");
+
+    options.options.forEach((opt, index) => {
+      const checked = index === 0 ? "checked" : "";
+      radioContainer.innerHTML += `
+        <div>
+          <input type="radio" id="payment-${opt}" name="paymentMethod" value="${opt}" ${checked}>
+          <label for="payment-${opt}">${opt}</label>
+        </div>`;
+    });
+  } else if (options.input) {
+    // KASUS 2: MODAL DENGAN INPUT TEKS
+    inputEl.classList.remove("hidden");
+    radioContainer.classList.add("hidden");
+    inputEl.placeholder = options.placeholder || "";
+  } else {
+    // KASUS 3: MODAL KONFIRMASI BIASA (TANPA INPUT APAPUN)
+    inputEl.classList.add("hidden");
+    radioContainer.classList.add("hidden");
   }
 
   // Tampilkan modal
   overlay.classList.remove("hidden");
 
-  // Ini bagian canggihnya: Promise
   return new Promise((resolve, reject) => {
-    // Fungsi untuk menutup modal
     const closeModal = () => {
       overlay.classList.add("hidden");
-      // Hapus event listener agar tidak menumpuk
       confirmBtn.removeEventListener("click", onConfirm);
       cancelBtn.removeEventListener("click", onCancel);
     };
 
-    // Handler saat tombol konfirmasi diklik
+    // Handler konfirmasi yang sudah diperbaiki
     const onConfirm = () => {
-      resolve(options.input ? inputEl.value : true);
+      if (options.isPaymentModal) {
+        const selected = document.querySelector(
+          'input[name="paymentMethod"]:checked'
+        );
+        console.log("4. Tombol Konfirmasi diklik. Pilihan radio:", selected);
+        resolve(selected ? selected.value : options.options[0]);
+      } else {
+        resolve(options.input ? inputEl.value : true);
+      }
       closeModal();
     };
 
-    // Handler saat tombol batal diklik
     const onCancel = () => {
-      reject(false); // Kirim sinyal 'false' jika dibatalkan
+      reject(false);
       closeModal();
     };
 
-    // Pasang event listener
     confirmBtn.addEventListener("click", onConfirm);
     cancelBtn.addEventListener("click", onCancel);
   });
@@ -2152,6 +2316,83 @@ function setupHamburgerMenu() {
 
     // 👈 Tambahkan event listener untuk tombol logout
     logoutBtn.addEventListener("click", handleLogout);
+  }
+}
+
+// FUNGSI BARU UNTUK MENAMPILKAN MODAL PEMBAYARAN
+// TAMBAHKAN FUNGSI YANG HILANG INI DI script.js
+
+function showPaymentModal(id, nama, nohp) {
+  const overlay = document.getElementById("modal-overlay");
+  const title = document.getElementById("modal-title");
+  const message = document.getElementById("modal-message");
+  const input = document.getElementById("modal-input");
+  const radioOptions = document.getElementById("modal-radio-options");
+
+  // isi modal
+  title.textContent = "Pembayaran";
+  message.textContent = `Pilih metode pembayaran untuk ${nama}`;
+  input.classList.add("hidden");
+
+  // tampilkan pilihan metode (Cash / QRIS)
+  radioOptions.classList.remove("hidden");
+  radioOptions.innerHTML = `
+    <label><input type="radio" name="payment" value="Cash"> Cash</label><br>
+    <label><input type="radio" name="payment" value="QRIS"> QRIS</label>
+  `;
+
+  overlay.classList.remove("hidden");
+
+  // tombol konfirmasi
+  document.getElementById("modal-confirm").onclick = function () {
+    const selected = document.querySelector('input[name="payment"]:checked');
+    if (!selected) {
+      alert("Pilih metode pembayaran dulu!");
+      return;
+    }
+    updatePembayaran(id, nohp, nama, selected.value);
+    overlay.classList.add("hidden");
+  };
+
+  // tombol batal
+  document.getElementById("modal-cancel").onclick = function () {
+    overlay.classList.add("hidden");
+  };
+}
+
+// TAMBAHKAN FUNGSI BARU INI DI script.js
+
+async function updatePembayaran(transactionId, noHp, nama, paymentMethod) {
+  if (loadingSpinner) loadingSpinner.classList.remove("hidden");
+
+  try {
+    // Kirim update ke server
+    await fetch(API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify({
+        action: "updatePayment",
+        transactionId: transactionId,
+        paymentMethod: paymentMethod,
+      }),
+    });
+
+    // Perbarui data di variabel lokal
+    semuaTransaksi.forEach((t) => {
+      if (t.ID_Transaksi === transactionId) {
+        t.Status_Bayar = "Lunas";
+        t.Metode_Pembayaran = paymentMethod;
+      }
+    });
+
+    // Tampilkan ulang kartu Kanban
+    renderKanbanCards();
+    alert(`Pembayaran untuk order ${transactionId} (${nama}) berhasil.`);
+  } catch (error) {
+    console.error("Gagal mengupdate pembayaran:", error);
+    alert("Gagal mengupdate status pembayaran. Cek koneksi Anda.");
+  } finally {
+    if (loadingSpinner) loadingSpinner.classList.add("hidden");
   }
 }
 
