@@ -601,54 +601,59 @@ function renderStruk(transaksi) {
   const strukHtml = `
         <div class="page-container struk-container">
             <main>
-                <div id="struk-content">
-                    <div class="struk-info">
-                        <p><span>ID:</span> <span>${
-                          transaksi.transaksiId || transaksi.id
-                        }</span></p>
-                        <p><span>Tanggal:</span> <span>${new Date(
-                          transaksi.tanggal
-                        ).toLocaleString("id-ID", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}</span></p>
-                        <p><span>Pelanggan:</span> <span>${
-                          transaksi.nama
-                        }</span></p>
-                    </div>
-                    <p class="struk-separator">-------------------------</p> <div class="struk-items-list">
-                        ${itemsHtml}
-                    </div>
-                    <p class="struk-separator">-------------------------</p> <div class="struk-total">
-                        <h3><span>Grand Total:</span> <span>Rp${grandTotal.toLocaleString(
-                          "id-ID"
-                        )}</span></h3>
-                    </div>
-                    <p class="struk-bayar"><span>Status:</span> <span><strong>${
-                      transaksi.statusBayar
-                    }</strong></span></p>
-                    ${
-                      transaksi.catatan
-                        ? `<div class="struk-catatan"><p><span>Catatan:</span> <span>${transaksi.catatan}</span></p></div>`
-                        : ""
-                    }
-                    ${poinInfoHtml}
-                    <p class="struk-separator">-------------------------</p> <div class="struk-footer">
-                        <p>Terima Kasih!</p>
-                        <p>Simpan struk ini sebagai bukti.</p>
-                    </div>
-                </div>
-                <div class="struk-actions">
-                    <button id="tombol-cetak"><i class="fa-solid fa-print"></i> Cetak Struk</button>
-                    <button id="tombol-wa"><i class="fa-brands fa-whatsapp"></i> Kirim via WhatsApp</button>
-                    <button id="tombol-kembali"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
-                </div>
-            </main>
+            <div class="struk-info">
+            <p><span>ID:</span> <span>${
+              transaksi.transaksiId || transaksi.id
+            }</span></p>
+            <p><span>Tanggal:</span> <span>${new Date(
+              transaksi.tanggal
+            ).toLocaleString("id-ID", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}</span></p>
+           
+          </div>
+                <div class="struk-pelanggan-utama">
+            <h4>${transaksi.nama}</h4>
+          </div>
+
+          <div class="struk-items-list">
+            ${itemsHtml}
+          </div>
+          <p class="struk-separator"></p>
+          <div class="struk-total">
+            <h3><span>Grand Total:</span> <span>Rp${grandTotal.toLocaleString(
+              "id-ID"
+            )}</span></h3>
+          </div>
+          <p class="struk-bayar"><span>Status:</span> <span><strong>${
+            transaksi.statusBayar
+          }</strong></span></p>
+
+          ${
+            transaksi.catatan
+              ? `<div class="struk-catatan"><p><span>Catatan:</span> <span>${transaksi.catatan}</span></p></div>`
+              : ""
+          }
+          ${poinInfoHtml}
+
+          <div class="struk-footer">
+            <p class="struk-separator"></p>
+            <p>Terima Kasih!</p>
+            <p>Simpan struk ini sebagai bukti.</p>
+          </div>
         </div>
-    `;
+        <div class="struk-actions">
+          <button id="tombol-cetak"><i class="fa-solid fa-print"></i> Cetak Struk</button>
+          <button id="tombol-wa"><i class="fa-brands fa-whatsapp"></i> Kirim via WhatsApp</button>
+          <button id="tombol-kembali"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+        </div>
+      </main>
+    </div>
+  `;
 
   // LANGKAH PENTING:
   // 1. Render HTML ke halaman

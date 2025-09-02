@@ -982,7 +982,6 @@ fieldset .full-width {
 /* KOMPONEN PENDUKUNG & UTILITAS           */
 /* ======================================= */
 
-/* --- Halaman Struk (Tampilan Layar) --- */
 .struk-container main {
   padding-top: 0;
 }
@@ -1328,19 +1327,129 @@ fieldset .full-width {
   .struk-container * {
     visibility: visible;
   }
+
   .struk-container {
     position: absolute;
     left: 0;
     top: 0;
-    width: 58mm; /* ukuran kertas */
-    margin: 0; /* rapat */
-    padding: 0; /* rapat */
-    border: none; /* hilangin border saat print */
-    border-radius: 0;
-    font-size: 11px; /* kecilin biar muat */
+    width: 58mm;
+    margin: 0;
+    padding: 3mm;
+    font-family: "monospace", "Courier New";
+    color: #000;
+    font-size: 9pt;
   }
-  .struk-actions {
+
+  .struk-actions,
+  .struk-logo {
     display: none !important;
+  }
+  .struk-separator {
+    border-top: 1px dashed #000;
+    margin: 6px 0;
+  }
+
+  /* --- ATURAN BARU PER BAGIAN --- */
+
+  /* Header Toko */
+  .struk-header {
+    text-align: center;
+  }
+  .struk-header h3 {
+    font-size: 11pt;
+    font-weight: bold;
+    margin: 0 0 4px 0;
+  }
+  .struk-header p {
+    font-size: 8pt;
+    margin: 0 0 8px 0;
+  }
+
+  /* Info Transaksi (ID & Tanggal) - Dibuat rapat & kecil */
+  .struk-info {
+    border-top: 1px dashed #000;
+    padding-top: 6px;
+  }
+  .struk-info p {
+    font-size: 8pt;
+    display: flex;
+    justify-content: space-between;
+    margin: 1px 0;
+  }
+
+  /* NAMA PELANGGAN SEBAGAI JUDUL UTAMA */
+  .struk-pelanggan-utama {
+    text-align: center;
+    padding: 6px 0;
+    margin: 6px 0;
+    border-top: 1px dashed #000;
+    border-bottom: 1px dashed #000;
+  }
+  .struk-pelanggan-utama h4 {
+    font-size: 12pt;
+    font-weight: bold;
+    margin: 0;
+  }
+
+  /* Daftar Item */
+  .struk-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Sejajarkan dari atas */
+    margin: 0;
+    padding: 2px 0;
+  }
+
+  .struk-item .item-details {
+    display: flex;
+    flex-direction: column;
+    /* KUNCI UTAMA: Batasi lebar agar tidak mendorong harga */
+    max-width: 70%;
+  }
+
+  .struk-item .item-name {
+    font-weight: bold;
+  }
+
+  .struk-item .item-package {
+    font-size: 10px;
+    color: #333;
+    white-space: nowrap;
+  }
+
+  .struk-item .item-price {
+    /* Pastikan harga selalu menempel di kanan */
+    text-align: right;
+    white-space: nowrap; /* Mencegah harga turun baris */
+  }
+
+  /* Grand Total */
+  .struk-total h3 {
+    font-size: 10pt;
+    font-weight: bold;
+  }
+
+  /* Info Tambahan (Status, Catatan, Poin) */
+  .struk-bayar p,
+  .struk-catatan p,
+  .struk-poin-summary p {
+    font-size: 8pt;
+  }
+  .struk-bayar strong,
+  .struk-poin-summary strong {
+    font-weight: bold;
+  }
+  .exp-info-struk {
+    font-size: 7pt;
+  }
+
+  /* Footer */
+  .struk-footer {
+    text-align: center;
+  }
+  .struk-footer p {
+    margin: 1px 0;
+    font-size: 8pt;
   }
 }
 
