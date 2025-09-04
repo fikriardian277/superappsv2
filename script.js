@@ -9,6 +9,7 @@ const ATURAN_MINIMAL_KG = {
   "Setrika Only": 1,
   "Cuci Kering Lipat": 3,
 };
+const FITUR_MEMBER_AKTIF = false;
 // =================================================================
 // Variabel Global
 // =================================================================
@@ -307,6 +308,7 @@ function renderFormKasir(pelanggan = null) {
 }
 
 function updateMemberSection(pelanggan) {
+  if (!FITUR_MEMBER_AKTIF) return;
   const container = document.getElementById("member-actions-container");
   if (!container) return;
 
@@ -565,7 +567,7 @@ function renderStruk(transaksi) {
 
   const isMember = transaksi.statusMember === "Aktif";
   let poinInfoHtml = "";
-  if (isMember) {
+  if (isMember && FITUR_MEMBER_AKTIF) {
     const totalBelanja = transaksi.items
       .filter((item) => !item.isDiscount)
       .reduce((sum, item) => sum + item.subtotal, 0);
@@ -680,9 +682,9 @@ function renderStruk(transaksi) {
   }, 0); // Menggunakan setTimeout dengan 0 ms akan menunda eksekusi hingga event loop berikutnya.
 }
 
-// GANTI FUNGSI LAMA DENGAN VERSI BARU INI
+// GANTI SELURUH FUNGSI renderDetailTransaksi ANDA DENGAN INI
+
 async function renderDetailTransaksi(transactionId) {
-  // Tampilkan spinner jika ada
   if (loadingSpinner) loadingSpinner.classList.remove("hidden");
 
   try {
@@ -694,7 +696,17 @@ async function renderDetailTransaksi(transactionId) {
     }
     const trxPertama = itemsTransaksi[0];
 
-    // GABUNGKAN DATA: Buat objek transaksi yang lengkap untuk struk
+    // --- PERBAIKAN UTAMA DI SINI ---
+    // 1. Cari profil asli pelanggan di dalam variabel daftarPelanggan
+    const pelangganInfo = daftarPelanggan.find(
+      (p) => p.ID_Pelanggan === trxPertama.ID_Pelanggan
+    );
+    // 2. Ambil status member yang benar dari profil tersebut
+    const statusMemberAsli = pelangganInfo
+      ? pelangganInfo.Status_Member
+      : "Non-Member";
+
+    // 3. Buat objek struk dengan data yang sudah pasti benar
     const transaksiUntukStruk = {
       id: trxPertama.ID_Transaksi,
       tanggal: trxPertama.Tanggal_Masuk,
@@ -703,16 +715,11 @@ async function renderDetailTransaksi(transactionId) {
       statusBayar: trxPertama.Status_Bayar,
       catatan: trxPertama.Catatan,
 
-      // --- BAGIAN KUNCI PERBAIKAN ---
-      // Ambil data "snapshot" poin langsung dari baris transaksi pertama
-      // Jika Poin_Awal ada nilainya, berarti dia member saat itu.
-      statusMember: trxPertama.Poin_Awal !== undefined ? "Aktif" : "Non-Member",
+      // Gunakan status member yang benar
+      statusMember: statusMemberAsli,
+
       poinSebelumnya: trxPertama.Poin_Awal,
       poinDitebus: trxPertama.Poin_Ditebus,
-
-      // Kita "tebak" status totebag dari selisih poin yang didapat.
-      // Poin didapat = (poin dari belanja) + (poin totebag).
-      // Jika Poin_Didapat > poin dari belanja, berarti dia pakai totebag.
       pakaiTotebag:
         trxPertama.Poin_Didapat >
         Math.floor(
@@ -720,29 +727,24 @@ async function renderDetailTransaksi(transactionId) {
             .filter((i) => Number(i.Total_Harga) > 0)
             .reduce((sum, item) => sum + Number(item.Total_Harga), 0) / 10000
         ),
-
-      // Map item-item seperti biasa
       items: itemsTransaksi.map((item) => ({
         kategori: item.Kategori,
         layanan: item.Layanan,
         paket: item.Paket,
         jumlah: item.Jumlah,
         subtotal: Number(item.Total_Harga),
-        // Tambahkan properti isDiscount jika itu adalah item diskon
         isDiscount: item.Layanan.toLowerCase().includes("diskon poin"),
       })),
     };
 
     renderStruk(transaksiUntukStruk);
   } catch (error) {
-    // Tampilkan error jika terjadi masalah
     await showCustomModal({
       title: "Error",
       message: error.message,
       confirmText: "OK",
     });
   } finally {
-    // Sembunyikan spinner setelah selesai
     if (loadingSpinner) loadingSpinner.classList.add("hidden");
   }
 }
