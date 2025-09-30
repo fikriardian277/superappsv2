@@ -38,6 +38,44 @@ async function init() {
   idCabangAktif = localStorage.getItem("idCabangLaundry");
   namaCabangAktif = localStorage.getItem("namaCabangLaundry");
 
+  document
+    .getElementById("sync-status-button")
+    .addEventListener("click", async () => {
+      const syncButton = document.getElementById("sync-status-button");
+      const syncIcon = syncButton.querySelector("i");
+
+      // Beri tahu user bahwa proses sedang berjalan
+      syncIcon.classList.add("fa-spin"); // Tambah animasi putar
+      await showCustomModal({
+        title: "Sinkronisasi",
+        message: "Mencoba mengirim ulang data yang tertunda...",
+        confirmText: "OK",
+      });
+
+      // Panggil fungsi sinkronisasi yang sudah ada
+      await sinkronkanDataOffline();
+
+      // Hentikan animasi
+      syncIcon.classList.remove("fa-spin");
+
+      // Cek lagi sisa antrian setelah dicoba
+      const sisaAntrian =
+        JSON.parse(localStorage.getItem("antrianOffline")) || [];
+      if (sisaAntrian.length === 0) {
+        await showCustomModal({
+          title: "Berhasil!",
+          message: "Semua data berhasil disinkronkan ke server.",
+          confirmText: "Mantap!",
+        });
+      } else {
+        await showCustomModal({
+          title: "Gagal",
+          message: `Masih ada ${sisaAntrian.length} data yang gagal dikirim. Periksa koneksi internet Anda dan coba lagi nanti.`,
+          confirmText: "OK",
+        });
+      }
+    });
+
   // 2. Buat "Gerbang" Pengecekan
   if (idCabangAktif) {
     // ===============================================
@@ -73,6 +111,7 @@ async function init() {
       .addEventListener("click", renderPelanggan);
 
     await muatDataAwal();
+    updateSyncStatusUI();
     renderDashboard();
     sinkronkanDataOffline();
     if (loadingSpinner) loadingSpinner.classList.add("hidden");
@@ -1043,24 +1082,39 @@ async function handleFormSubmit(e) {
 
 async function kirimDataLatarBelakang(payload) {
   try {
-    const stringifiedPayload = JSON.stringify(payload);
-    const encodedPayload = encodeURIComponent(stringifiedPayload);
-    const urlWithParams = `${API_URL}?action=saveTransaction&payload=${encodedPayload}`;
+    // Tambahkan properti 'action' ke payload sebelum mengirim
+    const payloadWithAction = {
+      ...payload,
+      action: "saveTransaction",
+    };
 
-    const response = await fetch(urlWithParams);
+    const response = await fetch(API_URL, {
+      method: "POST",
+      // mode: 'no-cors' kita HAPUS karena CORS sudah di-handle di doOptions
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8", // Apps Script lebih suka ini
+      },
+      body: JSON.stringify(payloadWithAction), // Kirim payload di dalam body
+    });
+
+    // Coba baca respons dari server
     const result = await response.json();
+
     if (result.status !== "success") {
-      throw new Error(result.message || "Server mengembalikan error.");
+      // Jika server mengembalikan error yang terkendali
+      throw new Error(result.message || "Server mengembalikan status error.");
     }
+
     console.log(
-      `Transaksi ${payload.transaksiId} berhasil disinkronkan ke server.`
+      `Transaksi ${payload.transaksiId} berhasil disinkronkan ke server via POST.`
     );
   } catch (error) {
     console.warn(
-      `Gagal mengirim transaksi ${payload.transaksiId}. Menyimpan ke antrian offline.`,
+      `Gagal mengirim transaksi ${payload.transaksiId} via POST. Menyimpan ke antrian offline.`,
       error
     );
     simpanKeAntrianOffline(payload);
+    updateSyncStatusUI();
   }
 }
 
@@ -1119,6 +1173,7 @@ async function sinkronkanDataOffline() {
 
   // Simpan sisa antrian yang masih gagal
   localStorage.setItem("antrianOffline", JSON.stringify(antrianBaru));
+  dateSyncStatusUI();
 
   // Jika ada perubahan, muat ulang semua data dari server untuk memastikan konsistensi
   if (antrianBaru.length < antrian.length) {
@@ -2411,5 +2466,23 @@ function handleLogout() {
     localStorage.removeItem("namaCabangLaundry");
     // Muat ulang halaman, otomatis akan kembali ke layar login
     location.reload();
+  }
+}
+
+// FUNGSI BARU UNTUK MENGELOLA TAMPILAN TOMBOL SINKRONISASI
+function updateSyncStatusUI() {
+  const syncButton = document.getElementById("sync-status-button");
+  const syncBadge = document.getElementById("sync-count-badge");
+  if (!syncButton || !syncBadge) return;
+
+  const antrian = JSON.parse(localStorage.getItem("antrianOffline")) || [];
+
+  if (antrian.length > 0) {
+    // Jika ada data di antrian, tampilkan tombol dan jumlahnya
+    syncBadge.textContent = antrian.length;
+    syncButton.classList.remove("hidden");
+  } else {
+    // Jika antrian kosong, sembunyikan lagi tombolnya
+    syncButton.classList.add("hidden");
   }
 }

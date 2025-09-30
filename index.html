@@ -25,7 +25,15 @@
         <i class="fa-solid fa-bars"></i>
       </button>
       <h1 id="header-title">Dashboard</h1>
-      <div class="header-icon-placeholder"></div>
+
+      <button
+        id="sync-status-button"
+        class="header-icon-btn hidden"
+        title="Ada data yang belum tersinkronisasi. Klik untuk coba lagi."
+      >
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <span id="sync-count-badge" class="badge-count">0</span>
+      </button>
     </header>
 
     <nav class="hamburger-menu" id="hamburger-menu">
